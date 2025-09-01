@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kontakt | PersCraft</title>
+  <meta name="description" content="Kontakt zu PersCraft – Personalleasing & Gebäudereinigung in München. Jetzt unverbindlich anfragen.">
+  <style>
+    :root{
+      --bg:#fbfbfd;--fg:#1d1d1f;--muted:#6e6e73;--accent:#0071e3;--accent2:#147ce5;--card:#ffffff;--border:#ddd;
+    }
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--fg);background:var(--bg);line-height:1.6}
+    /* Header */
+    header{position:sticky;top:0;background:rgba(0,0,0,.85);color:#f5f5f7;backdrop-filter:saturate(180%) blur(20px);z-index:10}
+    .wrap{max-width:980px;margin:0 auto;padding:0 20px}
+    .nav{display:flex;align-items:center;height:48px;justify-content:space-between}
+    .nav a{color:#f5f5f7;text-decoration:none;opacity:.85;font-size:14px;margin-left:16px}
+    .nav a:hover,.nav a[aria-current="page"]{opacity:1}
+    main{padding:48px 0 60px}
+    /* Hero */
+    .hero{background:linear-gradient(135deg,#b3ad8e 0%, var(--bg) 100%);padding:80px 20px;text-align:center}
+    .hero h1{font-size:40px;margin:0 0 10px;background:linear-gradient(90deg,#54534a 0%, var(--muted) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .hero p{color:var(--muted);font-size:18px;margin:0}
+    /* Grid */
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:30px;align-items:start;margin-top:30px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+    /* Card */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 4px 18px rgba(0,0,0,.05);padding:24px}
+    h2{font-size:24px;margin:0 0 12px}
+    /* Form */
+    form label{display:block;font-weight:600;margin:14px 0 6px}
+    form input,form textarea,form select{
+      width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:#fff;font-size:16px;outline:none
+    }
+    form textarea{min-height:140px;resize:vertical}
+    .hint{color:var(--muted);font-size:13px;margin-top:6px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media(max-width:700px){.row{grid-template-columns:1fr}}
+    .checkbox{display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+    .checkbox input{margin-top:3px}
+    .actions{margin-top:18px}
+    button[type="submit"]{
+      background:linear-gradient(90deg,var(--accent) 0%, var(--accent2) 100%);
+      color:#fff;border:none;border-radius:999px;padding:12px 22px;font-size:16px;cursor:pointer;transition:transform .2s, box-shadow .2s
+    }
+    button[type="submit"]:hover{transform:scale(1.03);box-shadow:0 8px 18px rgba(0,0,0,.12)}
+    .msg{margin-top:12px;font-size:14px;display:none}
+    .msg.ok{color:#1f7a1f}.msg.err{color:#b00020}
+    /* Sidebar */
+    .contact-list{list-style:none;padding:0;margin:0}
+    .contact-list li{margin:10px 0}
+    .contact-list a{color:var(--accent);text-decoration:none}
+    .contact-list a:hover{text-decoration:underline}
+    .map-wrap{margin-top:18px}
+    .map-consent{border:1px dashed var(--border);border-radius:12px;padding:14px;text-align:center;color:var(--muted)}
+    .map-btn{margin-top:10px;background:#222;color:#fff;border:none;border-radius:8px;padding:8px 14px;cursor:pointer}
+    iframe.map{width:100%;height:280px;border:0;border-radius:12px;display:none}
+    /* Footer */
+    footer{border-top:1px solid var(--border);color:var(--muted);text-align:center;padding:20px 10px;margin-top:40px}
+    footer a{color:var(--muted);text-decoration:none;margin:0 8px;transition:color .3s}
+    footer a:hover{color:var(--accent)}
+    /* Cookie Banner */
+    #cookie-banner{position:fixed;left:0;right:0;bottom:0;background:#222;color:#fff;padding:15px;text-align:center;font-size:14px;display:none;z-index:1000}
+    #cookie-banner a{color:#4EA8DE;text-decoration:underline}
+    #cookie-banner button{margin-left:12px;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;font-size:14px}
+    #cookie-accept{background:#4CAF50;color:#fff} #cookie-decline{background:#d9534f;color:#fff}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <div><a href="index.html" style="font-weight:600;">PersCraft</a></div>
+      <nav>
+        <a href="index.html">Startseite</a>
+        <a href="impressum.html">Impressum</a>
+        <a href="datenschutz.html">Datenschutz</a>
+        <a href="kontakt.html" aria-current="page">Kontakt</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <h1>Kontakt</h1>
+      <p>Wir freuen uns auf Ihre Anfrage – schnell, unverbindlich und persönlich.</p>
+    </div>
+  </section>
+
+  <main class="wrap">
+    <div class="grid">
+      <!-- Kontaktformular -->
+      <section class="card" aria-label="Kontaktformular">
+        <h2>Schreiben Sie uns</h2>
+        <form id="contactForm" novalidate>
+          <div class="row">
+            <div>
+              <label for="name">Ihr Name *</label>
+              <input id="name" name="name" autocomplete="name" required placeholder="Max Mustermann">
+            </div>
+            <div>
+              <label for="email">E-Mail *</label>
+              <input id="email" name="email" type="email" autocomplete="email" required placeholder="beispiel@mail.de">
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="phone">Telefon (optional)</label>
+              <input id="phone" name="phone" type="tel" inputmode="tel" placeholder="+49 …">
+              <div class="hint">Für Rückfragen – wir rufen nur bei Bedarf zurück.</div>
+            </div>
+            <div>
+              <label for="topic">Betreff *</label>
+              <input id="topic" name="topic" required placeholder="Anfrage zu Unterhaltsreinigung / Personal">
+            </div>
+          </div>
+
+          <label for="message">Nachricht *</label>
+          <textarea id="message" name="message" required placeholder="Beschreiben Sie kurz Ihr Anliegen…"></textarea>
+
+          <div class="checkbox">
+            <input type="checkbox" id="consent" required>
+            <label for="consent">
+              Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a> gelesen und stimme der Verarbeitung meiner Angaben zum Zweck der Kontaktaufnahme zu.
+            </label>
+          </div>
+
+          <div class="actions">
+            <button type="submit">Nachricht senden</button>
+            <div id="formMsg" class="msg" role="alert" aria-live="polite"></div>
+          </div>
+        </form>
+        <p class="hint">* Pflichtfelder</p>
+      </section>
+
+      <!-- Kontaktdaten & Karte -->
+      <aside class="card" aria-label="Kontaktdaten">
+        <h2>So erreichen Sie uns</h2>
+        <ul class="contact-list">
+          <li><strong>Adresse:</strong><br>Silvanastraße 7, 81927 München</li>
+          <li><strong>E-Mail:</strong> <a href="mailto:perscraftde@gmail.com">perscraftde@gmail.com</a></li>
+        </ul>
+
+        <div class="map-wrap">
+          <div id="mapConsentBox" class="map-consent">
+            <div>Zur Darstellung der Karte werden Daten an Google (Maps) übertragen.</div>
+            <button id="loadMapBtn" class="map-btn" type="button">Karte laden</button>
+          </div>
+          <iframe
+            id="gmap"
+            class="map"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            src=""
+            title="PersCraft Standort – Google Maps"
+            aria-hidden="true">
+          </iframe>
+          <div class="hint" style="margin-top:8px;">
+            Alternativ: <a href="https://www.google.com/maps/search/?api=1&query=Silvanastra%C3%9Fe+7%2C+81927+M%C3%BCnchen" target="_blank" rel="noopener">Route in Google Maps öffnen</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>© 2025 PersCraft – Inh. Anas Awni. Alle Rechte vorbehalten.</p>
+      <p>
+        <a href="impressum.html">Impressum</a> | 
+        <a href="datenschutz.html">Datenschutzerklärung</a> | 
+        <a href="kontakt.html">Kontakt</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Cookie-Banner -->
+  <div id="cookie-banner">
+    Diese Website verwendet Cookies, um Ihnen die bestmögliche Nutzung zu ermöglichen.
+    <a href="datenschutz.html">Mehr erfahren</a>
+    <button id="cookie-accept">Akzeptieren</button>
+    <button id="cookie-decline">Ablehnen</button>
+  </div>
+
+  <!-- Strukturierte Daten (optional, hilft SEO) -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"LocalBusiness",
+    "name":"PersCraft",
+    "image": "",
+    "address":{
+      "@type":"PostalAddress",
+      "streetAddress":"Silvanastraße 7",
+      "postalCode":"81927",
+      "addressLocality":"München",
+      "addressCountry":"DE"
+    },
+    "email":"mailto:perscraftde@gmail.com",
+    "url":"", 
+    "areaServed":"DE"
+  }
+  </script>
+
+  <script>
+    /* ---------- Form: Mailto-Fallback (ohne Backend) ----------
+       Wenn du später Formspree verwenden willst:
+       1) Erstelle ein Formular bei https://formspree.io
+       2) Trage die Endpoint-URL unten bei FORMSPREE_ENDPOINT ein.
+       Der Code sendet dann per fetch(), statt Mailprogramm zu öffnen. */
+    const FORMSPREE_ENDPOINT = ""; // z.B. "https://formspree.io/f/xxxxxx"
+
+    const form = document.getElementById('contactForm');
+    const msgEl = document.getElementById('formMsg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msgEl.style.display = 'none';
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const topic = document.getElementById('topic').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const consent = document.getElementById('consent').checked;
+
+      if (!name || !email || !topic || !message || !consent) {
+        showMsg('Bitte füllen Sie alle Pflichtfelder aus und stimmen Sie der Datenschutzerklärung zu.', true);
+        return;
+      }
+
+      if (FORMSPREE_ENDPOINT) {
+        try {
+          const resp = await fetch(FORMSPREE_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' },
+            body: new FormData(form)
+          });
+          if (resp.ok) {
+            form.reset();
+            showMsg('Vielen Dank! Ihre Nachricht wurde gesendet.', false);
+          } else {
+            showMsg('Senden fehlgeschlagen. Bitte versuchen Sie es später erneut.', true);
+          }
+        } catch (err) {
+          showMsg('Netzwerkfehler. Bitte später erneut versuchen.', true);
+        }
+      } else {
+        // Mailto-Fallback
+        const subject = encodeURIComponent(`[Kontakt] ${topic}`);
+        const body = encodeURIComponent(
+`Name: ${name}
+E-Mail: ${email}
+Telefon: ${phone || '-'}
+---
+Nachricht:
+${message}`
+        );
+        window.location.href = `mailto:perscraftde@gmail.com?subject=${subject}&body=${body}`;
+        showMsg('Mailprogramm wird geöffnet. Falls nicht, schreiben Sie direkt an perscraftde@gmail.com.', false);
+      }
+    });
+
+    function showMsg(text, isError){
+      msgEl.textContent = text;
+      msgEl.className = 'msg ' + (isError ? 'err' : 'ok');
+      msgEl.style.display = 'block';
+    }
+
+    /* ---------- Karte datenschutzfreundlich laden ---------- */
+    const loadBtn = document.getElementById('loadMapBtn');
+    const iframe = document.getElementById('gmap');
+    const consentBox = document.getElementById('mapConsentBox');
+    loadBtn.addEventListener('click', () => {
+      iframe.src = "https://www.google.com/maps?q=Silvanastra%C3%9Fe+7+81927+M%C3%BCnchen&output=embed";
+      iframe.style.display = 'block';
+      iframe.setAttribute('aria-hidden','false');
+      consentBox.style.display = 'none';
+    });
+
+    /* ---------- Cookie-Banner ---------- */
+    document.addEventListener("DOMContentLoaded",function(){
+      if(!localStorage.getItem("cookieConsent")){
+        document.getElementById("cookie-banner").style.display="block";
+      }
+      document.getElementById("cookie-accept").onclick=function(){
+        localStorage.setItem("cookieConsent","accepted");
+        document.getElementById("cookie-banner").style.display="none";
+      };
+      document.getElementById("cookie-decline").onclick=function(){
+        localStorage.setItem("cookieConsent","declined");
+        document.getElementById("cookie-banner").style.display="none";
+      };
+    });
+  </script>
+</body>
+</html>
