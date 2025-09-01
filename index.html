@@ -1,427 +1,785 @@
  <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PersCraft – Personalleasing & Gebäudereinigung</title>
+    <script>
+      (function() {
+        const originalConsole = window.console;
+        window.console = {
+          log: (...args) => {
+            originalConsole.log(...args);
+            window.parent.postMessage({ type: 'console', message: args.join(' ') }, '*');
+          },
+          error: (...args) => {
+            originalConsole.error(...args);
+            window.parent.postMessage({ type: 'console', message: 'Error: ' + args.join(' ') }, '*');
+          },
+          warn: (...args) => {
+            originalConsole.warn(...args);
+            window.parent.postMessage({ type: 'console', message: 'Warning: ' + args.join(' ') }, '*');
+          }
+        };
 
-  <style>
-    /* Apple-inspiriertes Design mit Verbesserungen */
-    :root {
-      --background-light: #fbfbfd;
-      --text-dark: #1d1d1f;
-      --text-light: #f5f5f7;
-      --accent-color: #0071e3;
-      --accent-hover: #147ce5;
-      --subtle-gray: #6e6e73;
-      --card-background: #ffffff;
-      --footer-background: #f5f5f7;
-      --logo-background: #b3ad8e;
-      --logo-color: #f0ecd0;
-      --logo-text: #54534a;
-      --transition-speed: 0.5s;
-    }
-    [data-theme="dark"] {
-      --background-light: #000000;
-      --text-dark: #f5f5f7;
-      --text-light: #f5f5f7;
-      --subtle-gray: #86868b;
-      --card-background: #1d1d1f;
-      --footer-background: #1d1d1f;
-      --logo-background: #54534a;
-      --logo-color: #f0ecd0;
-      --logo-text: #b3ad8e;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-    html { scroll-behavior: smooth; }
-    body { color: var(--text-dark); background-color: var(--background-light); line-height: 1.5; transition: all 0.3s ease; overflow-x: hidden; }
-
-    .navbar {
-      background-color: rgba(0,0,0,0.8);
-      backdrop-filter: saturate(180%) blur(20px);
-      position: fixed; width: 100%; top: 0; z-index: 999;
-      padding: 0 22px; height: 44px; display: flex; align-items: center; justify-content: space-between;
-    }
-    .logo-container { display: flex; align-items: center; }
-    .logo-icon { height: 20px; margin-right: 8px; }
-    .logo { color: var(--text-light); font-size: 20px; font-weight: 500; text-decoration: none; }
-    .nav-links { display: flex; list-style: none; }
-    .nav-links a { color: var(--text-light); opacity: .8; font-size: 14px; text-decoration: none; margin: 0 15px; transition: opacity .3s; }
-    .nav-links a:hover { opacity: 1; }
-    .theme-toggle { background: none; border: none; color: var(--text-light); cursor: pointer; font-size: 14px; opacity: .8; transition: opacity .3s; display: flex; align-items: center; }
-    .theme-toggle:hover { opacity: 1; }
-
-    .hero {
-      height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center;
-      background: linear-gradient(135deg, var(--logo-background) 0%, var(--background-light) 100%);
-      position: relative; overflow: hidden; padding-top: 44px;
-    }
-    .parallax-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: translateZ(-1px) scale(2); z-index: -1; }
-    .hero-content { z-index: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-    .company-logo { width: 200px; height: 200px; margin-bottom: 30px; transition: transform .3s ease; }
-    .company-logo:hover { transform: scale(1.05); }
-    h1 { font-size: 56px; font-weight: 600; margin-bottom: 10px; letter-spacing: -0.5px;
-      background: linear-gradient(90deg, var(--logo-text) 0%, var(--subtle-gray) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; transition: all .3s ease;
-    }
-    h2 { font-size: 27px; font-weight: 400; color: var(--subtle-gray); margin-bottom: 25px; max-width: 600px; }
-    .cta-button {
-      background: linear-gradient(90deg, var(--accent-color) 0%, var(--accent-hover) 100%);
-      color: #fff; padding: 12px 22px; border-radius: 980px; text-decoration: none; font-size: 17px;
-      transition: all .3s; transform: perspective(1px) translateZ(0); box-shadow: 0 0 1px rgba(0,0,0,0);
-    }
-    .cta-button:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,.1); }
-    .scroll-indicator { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: var(--text-dark); font-size: 14px; opacity: .7; animation: bounce 2s infinite; }
-    @keyframes bounce { 0%,20%,50%,80%,100%{transform: translateY(0) translateX(-50%);} 40%{transform: translateY(-15px) translateX(-50%);} 60%{transform: translateY(-7px) translateX(-50%);} }
-
-    .section { padding: 120px 0; max-width: 980px; margin: 0 auto; text-align: center; position: relative; overflow: hidden; }
-    .section-title { font-size: 48px; font-weight: 600; margin-bottom: 20px;
-      background: linear-gradient(90deg, var(--accent-color) 0%, var(--logo-text) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      opacity: 0; transform: translateY(30px); transition: all .6s ease;
-    }
-    .section-subtitle { font-size: 24px; font-weight: 400; color: var(--subtle-gray); margin-bottom: 60px; max-width: 700px; margin-left: auto; margin-right: auto; opacity: 0; transform: translateY(30px); transition: all .6s ease .2s; }
-
-    .services { display: flex; justify-content: space-between; margin-top: 40px; flex-wrap: wrap; }
-    .service {
-      width: 48%; padding: 40px; border-radius: 18px; background-color: var(--card-background);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05); text-align: left; transition: all .5s; opacity: 0; transform: translateY(50px);
-      margin-bottom: 20px; position: relative; overflow: hidden; backdrop-filter: blur(10px);
-    }
-    .service:nth-child(1){transition-delay:.3s;} .service:nth-child(2){transition-delay:.5s;}
-    .service::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
-      background: linear-gradient(90deg, var(--accent-color), var(--logo-color));
-      transform: scaleX(0); transform-origin: 0 50%; transition: transform .5s;
-    }
-    .service:hover::before { transform: scaleX(1); }
-    .service:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 15px 30px rgba(0,0,0,.1); }
-    .service-icon { width: 60px; height: 60px; margin-bottom: 20px; border-radius: 15px; background: linear-gradient(135deg, var(--logo-background), var(--background-light)); display: flex; align-items: center; justify-content: center; transition: transform .3s; }
-    .service:hover .service-icon { transform: rotate(5deg) scale(1.1); }
-    .service h3 { font-size: 24px; font-weight: 600; margin-bottom: 15px; color: var(--text-dark); }
-    .service p { font-size: 17px; color: var(--subtle-gray); margin-bottom: 20px; line-height: 1.6; }
-    .learn-more { color: var(--accent-color); font-size: 17px; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; position: relative; overflow: hidden; }
-    .learn-more::after { content: '›'; margin-left: 5px; transition: transform .3s; }
-    .learn-more:hover::after { transform: translateX(3px); }
-
-    .dark-mode-section { background-color: #000; color: #fff; padding: 120px 0; text-align: center; position: relative; overflow: hidden; }
-    .dark-mode-content { max-width: 980px; margin: 0 auto; padding: 0 20px; opacity: 0; transform: translateY(30px); transition: all .6s ease; }
-    .dark-mode-gradient { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(40,40,40,.8) 0%, rgba(0,0,0,1) 80%); z-index: 0; }
-    .dark-mode-title { font-size: 48px; font-weight: 600; margin-bottom: 20px;
-      background: linear-gradient(90deg, var(--logo-color) 0%, var(--accent-color) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; position: relative; z-index: 1;
-    }
-    .dark-mode-subtitle { font-size: 24px; color: #86868b; margin-bottom: 40px; max-width: 700px; margin-left: auto; margin-right: auto; position: relative; z-index: 1; }
-    .features { display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; position: relative; z-index: 1; }
-    .feature { background: rgba(40,40,40,.5); backdrop-filter: blur(20px); border-radius: 18px; width: 280px; padding: 30px; text-align: center; transition: transform .3s; }
-    .feature:hover { transform: translateY(-10px); }
-    .feature-icon { font-size: 40px; margin-bottom: 20px; color: var(--accent-color); }
-    .feature h3 { font-size: 20px; margin-bottom: 15px; color: #fff; }
-    .feature p { font-size: 16px; color: #86868b; }
-
-    .cta-section { background: linear-gradient(135deg, var(--logo-background) 0%, var(--background-light) 100%); padding: 80px 20px; text-align: center; }
-    .cta-content { max-width: 980px; margin: 0 auto; opacity: 0; transform: translateY(30px); transition: all .6s ease; }
-
-    .footer { background-color: var(--footer-background); padding: 40px 0; font-size: 12px; color: var(--subtle-gray); text-align: center; position: relative; }
-    .footer-content { max-width: 980px; margin: 0 auto; padding: 0 20px; }
-    .footer-links { display: flex; justify-content: center; list-style: none; margin-bottom: 20px; flex-wrap: wrap; }
-    .footer-links a { color: var(--subtle-gray); margin: 0 15px; text-decoration: none; transition: color .3s; }
-    .footer-links a:hover { text-decoration: underline; color: var(--accent-color); }
-
-    /* Cookie Banner */
-    #cookie-banner {
-      position: fixed; bottom: 0; left: 0; right: 0; background: #222; color: #fff;
-      padding: 15px; text-align: center; font-size: 14px; display: none; z-index: 1000;
-    }
-    #cookie-banner a { color: #4EA8DE; text-decoration: underline; }
-    #cookie-banner button {
-      margin-left: 15px; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;
-    }
-    #cookie-accept { background: #4CAF50; color: #fff; }
-    #cookie-decline { background: #d9534f; color: #fff; }
-
-    /* Sichtbar-Animation */
-    .visible { opacity: 1; transform: translateY(0); }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .services, .features { flex-direction: column; align-items: center; }
-      .service { width: 90%; margin-bottom: 30px; }
-      .nav-links { display: none; } /* simple mobile */
-    }
-    /* Footer-Link Hover inline override */
-    footer a { transition: color .3s ease; }
-    footer a:hover { color: #008CBA; }
-  </style>
+        window.addEventListener('error', (event) => {
+          window.parent.postMessage({ type: 'console', message: 'Uncaught Error: ' + event.message }, '*');
+        });
+      })();
+    </script>
+  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PersCraft - Personalleasing & Gebäudereinigung</title>
+    <style>
+        /* Apple-inspiriertes Design mit Verbesserungen */
+        :root {
+            --background-light: #fbfbfd;
+            --text-dark: #1d1d1f;
+            --text-light: #f5f5f7;
+            --accent-color: #0071e3;
+            --accent-hover: #147ce5;
+            --subtle-gray: #6e6e73;
+            --card-background: #ffffff;
+            --footer-background: #f5f5f7;
+            --logo-background: #b3ad8e;
+            --logo-color: #f0ecd0;
+            --logo-text: #54534a;
+            --transition-speed: 0.5s;
+        }
+        
+        [data-theme="dark"] {
+            --background-light: #000000;
+            --text-dark: #f5f5f7;
+            --text-light: #f5f5f7;
+            --subtle-gray: #86868b;
+            --card-background: #1d1d1f;
+            --footer-background: #1d1d1f;
+            --logo-background: #54534a;
+            --logo-color: #f0ecd0;
+            --logo-text: #b3ad8e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            color: var(--text-dark);
+            background-color: var(--background-light);
+            line-height: 1.5;
+            transition: all 0.3s ease;
+            overflow-x: hidden;
+        }
+        
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 999;
+            padding: 0 22px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            height: 20px;
+            margin-right: 8px;
+        }
+        
+        .logo {
+            color: var(--text-light);
+            font-size: 20px;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-light);
+            opacity: 0.8;
+            font-size: 14px;
+            text-decoration: none;
+            margin: 0 15px;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 1;
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 14px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .theme-toggle:hover {
+            opacity: 1;
+        }
+        
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            background: linear-gradient(135deg, 
+                      var(--logo-background) 0%, 
+                      var(--background-light) 100%);
+            position: relative;
+            overflow: hidden;
+            padding-top: 44px;
+        }
+        
+        .parallax-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: translateZ(-1px) scale(2);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            z-index: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .company-logo {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+        
+        .company-logo:hover {
+            transform: scale(1.05);
+        }
+        
+        h1 {
+            font-size: 56px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, var(--logo-text) 0%, var(--subtle-gray) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.3s ease;
+        }
+        
+        h2 {
+            font-size: 27px;
+            font-weight: 400;
+            color: var(--subtle-gray);
+            margin-bottom: 25px;
+            max-width: 600px;
+        }
+        
+        .cta-button {
+            background: linear-gradient(90deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+            color: white;
+            padding: 12px 22px;
+            border-radius: 980px;
+            text-decoration: none;
+            font-size: 17px;
+            transition: all 0.3s;
+            transform: perspective(1px) translateZ(0);
+            box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-dark);
+            font-size: 14px;
+            opacity: 0.7;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0) translateX(-50%);
+            }
+            40% {
+                transform: translateY(-15px) translateX(-50%);
+            }
+            60% {
+                transform: translateY(-7px) translateX(-50%);
+            }
+        }
+        
+        .section {
+            padding: 120px 0;
+            max-width: 980px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section-title {
+            font-size: 48px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--accent-color) 0%, var(--logo-text) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .section-subtitle {
+            font-size: 24px;
+            font-weight: 400;
+            color: var(--subtle-gray);
+            margin-bottom: 60px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease 0.2s;
+        }
+        
+        .services {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .service {
+            width: 48%;
+            padding: 40px;
+            border-radius: 18px;
+            background-color: var(--card-background);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            text-align: left;
+            transition: all 0.5s;
+            opacity: 0;
+            transform: translateY(50px);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .service:nth-child(1) {
+            transition-delay: 0.3s;
+        }
+        
+        .service:nth-child(2) {
+            transition-delay: 0.5s;
+        }
+        
+        .service::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent-color), var(--logo-color));
+            transform: scaleX(0);
+            transform-origin: 0 50%;
+            transition: transform 0.5s;
+        }
+        
+        .service:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .service:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, var(--logo-background), var(--background-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+        }
+        
+        .service:hover .service-icon {
+            transform: rotate(5deg) scale(1.1);
+        }
+        
+        .service h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+        
+        .service p {
+            font-size: 17px;
+            color: var(--subtle-gray);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .learn-more {
+            color: var(--accent-color);
+            font-size: 17px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .learn-more::after {
+            content: '›';
+            margin-left: 5px;
+            transition: transform 0.3s;
+        }
+        
+        .learn-more:hover::after {
+            transform: translateX(3px);
+        }
+        
+        .dark-mode-section {
+            background-color: #000;
+            color: #fff;
+            padding: 120px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dark-mode-content {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .dark-mode-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(40, 40, 40, 0.8) 0%, rgba(0, 0, 0, 1) 80%);
+            z-index: 0;
+        }
+        
+        .dark-mode-title {
+            font-size: 48px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--logo-color) 0%, var(--accent-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .dark-mode-subtitle {
+            font-size: 24px;
+            color: #86868b;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .features {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .feature {
+            background: rgba(40, 40, 40, 0.5);
+            backdrop-filter: blur(20px);
+            border-radius: 18px;
+            width: 280px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .feature:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+        
+        .feature h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        
+        .feature p {
+            font-size: 16px;
+            color: #86868b;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, var(--logo-background) 0%, var(--background-light) 100%);
+            padding: 80px 20px;
+            text-align: center;
+        }
+        
+        .cta-content {
+            max-width: 980px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .footer {
+            background-color: var(--footer-background);
+            padding: 40px 0;
+            font-size: 12px;
+            color: var(--subtle-gray);
+            text-align: center;
+            position: relative;
+        }
+        
+        .footer-content {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: var(--subtle-gray);
+            margin: 0 15px;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+            color: var(--accent-color);
+        }
+        
+        /* Class for elements that are visible */
+        .visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .services, .features {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .service {
+                width: 90%;
+                margin-bottom: 30px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
 </head>
-
 <body data-theme="light">
-  <!-- Navigation Bar -->
-  <nav class="navbar">
-    <div class="logo-container">
-      <svg class="logo-icon" viewBox="0 0 100 100" width="20" height="20">
-        <g fill="var(--logo-color)">
-          <circle cx="30" cy="25" r="10"/>
-          <circle cx="50" cy="25" r="15"/>
-          <circle cx="70" cy="25" r="10"/>
-          <path d="M30,40 C20,40 15,50 15,60 C15,70 20,80 30,80 C40,80 45,70 45,60 C45,50 40,40 30,40 Z"/>
-          <path d="M50,40 C40,40 35,50 35,60 C35,70 40,80 50,80 C60,80 65,70 65,60 C65,50 60,40 50,40 Z"/>
-          <path d="M70,40 C60,40 55,50 55,60 C55,70 60,80 70,80 C80,80 85,70 85,60 C85,50 80,40 70,40 Z"/>
-        </g>
-      </svg>
-      <a href="#" class="logo">PersCraft</a>
-    </div>
-    <ul class="nav-links">
-      <li><a href="#">Startseite</a></li>
-      <li><a href="#services">Dienstleistungen</a></li>
-      <li><a href="#innovation">Innovation</a></li>
-      <li><a href="#kontakt">Kontakt</a></li>
-      <li><a href="#impressum">Impressum</a></li>
-      <li><a href="#datenschutz">Datenschutz</a></li>
-    </ul>
-    <button class="theme-toggle" id="theme-toggle">Dark Mode</button>
-  </nav>
-
-  <!-- Hero Section -->
-  <section class="hero" id="hero">
-    <div class="parallax-background"></div>
-    <div class="hero-content">
-      <svg class="company-logo" viewBox="0 0 500 500" width="200" height="200">
-        <rect width="500" height="500" fill="var(--logo-background)" opacity="0"/>
-        <g fill="var(--logo-color)">
-          <circle cx="175" cy="150" r="50"/>
-          <circle cx="250" cy="150" r="65"/>
-          <circle cx="325" cy="150" r="50"/>
-          <path d="M175,225 C125,225 100,275 100,325 C100,375 125,425 175,425 C225,425 250,375 250,325 C250,275 225,225 175,225 Z"/>
-          <path d="M250,225 C200,225 175,275 175,325 C175,375 200,425 250,425 C300,425 325,375 325,325 C325,275 300,225 250,225 Z"/>
-          <path d="M325,225 C275,225 250,275 250,325 C250,375 275,425 325,425 C375,425 400,375 400,325 C400,275 375,225 325,225 Z"/>
-        </g>
-        <text x="250" y="500" text-anchor="middle" fill="var(--logo-text)" font-size="70" font-weight="500">PersCraft</text>
-      </svg>
-      <h1>PersCraft</h1>
-      <h2>Exzellenz in Personalleasing und Gebäudereinigung.</h2>
-      <a href="#kontakt" class="cta-button">Jetzt anfragen</a>
-    </div>
-    <div class="scroll-indicator">Scroll für mehr</div>
-  </section>
-
-  <!-- Services -->
-  <section class="section" id="services">
-    <h2 class="section-title">Unsere Dienstleistungen</h2>
-    <p class="section-subtitle">Bei PersCraft verbinden wir Innovation mit Perfektion, um maßgeschneiderte Lösungen für Ihr Unternehmen zu bieten.</p>
-
-    <div class="services">
-      <div class="service" id="personalleasing">
-        <div class="service-icon">
-          <svg viewBox="0 0 24 24" width="30" height="30">
-            <path fill="var(--text-dark)" d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
-          </svg>
-        </div>
-        <h3>Personalleasing</h3>
-        <p>Finden Sie die perfekten Mitarbeiter für Ihr Unternehmen – flexibel, kompetent und zuverlässig. Mit unserem innovativen Personalleasing-Konzept unterstützen wir Sie bei kurzfristigen Engpässen oder langfristigen Projekten.</p>
-        <p>Unsere sorgfältig ausgewählten Fachkräfte integrieren sich nahtlos in Ihre Arbeitsabläufe und bringen frische Perspektiven mit ein.</p>
-        <a href="#kontakt" class="learn-more">Mehr erfahren</a>
-      </div>
-
-      <div class="service" id="gebaeudereinigung">
-        <div class="service-icon">
-          <svg viewBox="0 0 24 24" width="30" height="30">
-            <path fill="var(--text-dark)" d="M19,14V20H5V14H19M14,11H10V13H14V11M19,11H15V13H19V11M5,11V13H9V11H5M19,8H5V10H19V8Z"/>
-          </svg>
-        </div>
-        <h3>Gebäudereinigung</h3>
-        <p>Kreieren Sie eine makellose Arbeitsumgebung mit unseren Premium-Reinigungsservices. Von täglicher Unterhaltsreinigung bis hin zu Spezialreinigungen – wir sorgen für Sauberkeit, die beeindruckt.</p>
-        <p>Umweltfreundliche Reinigungsmittel und modernste Techniken garantieren perfekte Ergebnisse bei minimalem ökologischen Fußabdruck.</p>
-        <a href="#kontakt" class="learn-more">Mehr erfahren</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Innovation -->
-  <section class="dark-mode-section" id="innovation">
-    <div class="dark-mode-gradient"></div>
-    <div class="dark-mode-content">
-      <h2 class="dark-mode-title">Innovation trifft Präzision</h2>
-      <p class="dark-mode-subtitle">Unsere Herangehensweise vereint modernste Technologien mit jahrelanger Erfahrung für optimale Ergebnisse.</p>
-
-      <div class="features">
-        <div class="feature">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" width="40" height="40">
-              <path fill="var(--accent-color)" d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z"/>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <svg class="logo-icon" viewBox="0 0 100 100" width="20" height="20">
+                <g fill="var(--logo-color)">
+                    <circle cx="30" cy="25" r="10"/>
+                    <circle cx="50" cy="25" r="15"/>
+                    <circle cx="70" cy="25" r="10"/>
+                    <path d="M30,40 C20,40 15,50 15,60 C15,70 20,80 30,80 C40,80 45,70 45,60 C45,50 40,40 30,40 Z"/>
+                    <path d="M50,40 C40,40 35,50 35,60 C35,70 40,80 50,80 C60,80 65,70 65,60 C65,50 60,40 50,40 Z"/>
+                    <path d="M70,40 C60,40 55,50 55,60 C55,70 60,80 70,80 C80,80 85,70 85,60 C85,50 80,40 70,40 Z"/>
+                </g>
             </svg>
-          </div>
-          <h3>Schulungsprogramme</h3>
-          <p>Kontinuierliche Weiterbildung unserer Mitarbeiter für höchste Servicequalität.</p>
+            <a href="#" class="logo">PersCraft</a>
         </div>
-
-        <div class="feature">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" width="40" height="40">
-              <path fill="var(--accent-color)" d="M17,12C17,14.42 15.28,16.44 13,16.9V21H11V16.9C8.72,16.44 7,14.42 7,12C7,9.58 8.72,7.56 11,7.1V3H13V7.1C15.28,7.56 17,9.58 17,12M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/>
+        <ul class="nav-links">
+            <li><a href="#">Startseite</a></li>
+            <li><a href="#services">Dienstleistungen</a></li>
+            <li><a href="#innovation">Innovation</a></li>
+            <li><a href="#kontakt">Kontakt</a></li>
+        </ul>
+        <button class="theme-toggle" id="theme-toggle">
+            Dark Mode
+        </button>
+    </nav>
+    
+    <!-- Hero Section with Parallax -->
+    <section class="hero" id="hero">
+        <div class="parallax-background"></div>
+        <div class="hero-content">
+            <svg class="company-logo" viewBox="0 0 500 500" width="200" height="200">
+                <rect width="500" height="500" fill="var(--logo-background)" opacity="0"/>
+                <g fill="var(--logo-color)">
+                    <circle cx="175" cy="150" r="50"/>
+                    <circle cx="250" cy="150" r="65"/>
+                    <circle cx="325" cy="150" r="50"/>
+                    <path d="M175,225 C125,225 100,275 100,325 C100,375 125,425 175,425 C225,425 250,375 250,325 C250,275 225,225 175,225 Z"/>
+                    <path d="M250,225 C200,225 175,275 175,325 C175,375 200,425 250,425 C300,425 325,375 325,325 C325,275 300,225 250,225 Z"/>
+                    <path d="M325,225 C275,225 250,275 250,325 C250,375 275,425 325,425 C375,425 400,375 400,325 C400,275 375,225 325,225 Z"/>
+                </g>
+                <text x="250" y="500" text-anchor="middle" fill="var(--logo-text)" font-size="70" font-weight="500">PersCraft</text>
             </svg>
-          </div>
-          <h3>Präzise Auswahl</h3>
-          <p>Maßgeschneiderte Personallösungen durch fortschrittliche Matching-Algorithmen.</p>
+            <h1>PersCraft</h1>
+            <h2>Exzellenz in Personalleasing und Gebäudereinigung.</h2>
+            <a href="#kontakt" class="cta-button">Jetzt anfragen</a>
         </div>
-
-        <div class="feature">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" width="40" height="40">
-              <path fill="var(--accent-color)" d="M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,12.5A1.5,1.5 0 0,1 10.5,11A1.5,1.5 0 0,1 12,9.5A1.5,1.5 0 0,1 13.5,11A1.5,1.5 0 0,1 12,12.5M12,7.2C9.9,7.2 8.2,8.9 8.2,11C8.2,14 12,17 12,17C12,17 15.8,14 15.8,11C15.8,8.9 14.1,7.2 12,7.2Z"/>
-            </svg>
-          </div>
-          <h3>Nachhaltige Reinigung</h3>
-          <p>Umweltfreundliche Produkte und ressourcenschonende Verfahren.</p>
+        <div class="scroll-indicator">
+            Scroll für mehr
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
+    
+    <!-- Services Section -->
+    <section class="section" id="services">
+        <h2 class="section-title">Unsere Dienstleistungen</h2>
+        <p class="section-subtitle">Bei PersCraft verbinden wir Innovation mit Perfektion, um maßgeschneiderte Lösungen für Ihr Unternehmen zu bieten.</p>
+        
+        <div class="services">
+            <div class="service" id="personalleasing">
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" width="30" height="30">
+                        <path fill="var(--text-dark)" d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+                    </svg>
+                </div>
+                <h3>Personalleasing</h3>
+                <p>Finden Sie die perfekten Mitarbeiter für Ihr Unternehmen – flexibel, kompetent und zuverlässig. Mit unserem innovativen Personalleasing-Konzept unterstützen wir Sie bei kurzfristigen Engpässen oder langfristigen Projekten.</p>
+                <p>Unsere sorgfältig ausgewählten Fachkräfte integrieren sich nahtlos in Ihre Arbeitsabläufe und bringen frische Perspektiven mit ein.</p>
+                <a href="#" class="learn-more">Mehr erfahren</a>
+            </div>
+            
+            <div class="service" id="gebaeudereinigung">
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" width="30" height="30">
+                        <path fill="var(--text-dark)" d="M19,14V20H5V14H19M14,11H10V13H14V11M19,11H15V13H19V11M5,11V13H9V11H5M19,8H5V10H19V8Z"/>
+                    </svg>
+                </div>
+                <h3>Gebäudereinigung</h3>
+                <p>Kreieren Sie eine makellose Arbeitsumgebung mit unseren Premium-Reinigungsservices. Von täglicher Unterhaltsreinigung bis hin zu Spezialreinigungen – wir sorgen für Sauberkeit, die beeindruckt.</p>
+                <p>Umweltfreundliche Reinigungsmittel und modernste Techniken garantieren perfekte Ergebnisse bei minimalem ökologischen Fußabdruck.</p>
+                <a href="#" class="learn-more">Mehr erfahren</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Dark Mode Section -->
+    <section class="dark-mode-section" id="innovation">
+        <div class="dark-mode-gradient"></div>
+        <div class="dark-mode-content">
+            <h2 class="dark-mode-title">Innovation trifft Präzision</h2>
+            <p class="dark-mode-subtitle">Unsere Herangehensweise vereint modernste Technologien mit jahrelanger Erfahrung für optimale Ergebnisse.</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" width="40" height="40">
+                            <path fill="var(--accent-color)" d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z"/>
+                        </svg>
+                    </div>
+                    <h3>Schulungsprogramme</h3>
+                    <p>Kontinuierliche Weiterbildung unserer Mitarbeiter für höchste Servicequalität.</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" width="40" height="40">
+                            <path fill="var(--accent-color)" d="M17,12C17,14.42 15.28,16.44 13,16.9V21H11V16.9C8.72,16.44 7,14.42 7,12C7,9.58 8.72,7.56 11,7.1V3H13V7.1C15.28,7.56 17,9.58 17,12M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/>
+                        </svg>
+                    </div>
+                    <h3>Präzise Auswahl</h3>
+                    <p>Maßgeschneiderte Personallösungen durch fortschrittliche Matching-Algorithmen.</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" width="40" height="40">
+                            <path fill="var(--accent-color)" d="M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,12.5A1.5,1.5 0 0,1 10.5,11A1.5,1.5 0 0,1 12,9.5A1.5,1.5 0 0,1 13.5,11A1.5,1.5 0 0,1 12,12.5M12,7.2C9.9,7.2 8.2,8.9 8.2,11C8.2,14 12,17 12,17C12,17 15.8,14 15.8,11C15.8,8.9 14.1,7.2 12,7.2Z"/>
+                        </svg>
+                    </div>
+                    <h3>Nachhaltige Reinigung</h3>
+                    <p>Umweltfreundliche Produkte und ressourcenschonende Verfahren.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Call to Action Section -->
+    <section class="cta-section" id="kontakt">
+        <div class="cta-content">
+            <h2 class="section-title" style="font-size: 32px;">Bereit für Exzellenz?</h2>
+            <p class="section-subtitle" style="margin-bottom: 30px;">Kontaktieren Sie uns für ein individuelles Angebot, das perfekt auf Ihre Bedürfnisse zugeschnitten ist.</p>
+            <a href="mailto:perscraftde@gmail.com" class="cta-button">Kontakt aufnehmen</a>
+        </div>
+    </section>
+    
+    <footer style="text-align: center; font-size: 14px; color: #666; padding: 20px 10px; border-top: 1px solid #ddd; margin-top: 40px; font-family: Arial, sans-serif;">
+  <p>© 2025 PersCraft – Inh. Anas Awni. Alle Rechte vorbehalten.</p>
+  <p>
+    <a href="/impressum.html" style="color: #666; text-decoration: none; margin: 0 8px;">Impressum</a> | 
+    <a href="/datenschutz.html" style="color: #666; text-decoration: none; margin: 0 8px;">Datenschutzerklärung</a>
+  </p>
+  <p>
+    E-Mail: <a href="mailto:perscraftde@gmail.com" style="color:#666; text-decoration:none;">perscraftde@gmail.com</a>
+  </p>
+</footer>
 
-  <!-- Kontakt -->
-  <section class="cta-section" id="kontakt">
-    <div class="cta-content">
-      <h2 class="section-title" style="font-size:32px;">Bereit für Exzellenz?</h2>
-      <p class="section-subtitle" style="margin-bottom:30px;">Kontaktieren Sie uns für ein individuelles Angebot, das perfekt auf Ihre Bedürfnisse zugeschnitten ist.</p>
-      <a href="mailto:perscraftde@gmail.com" class="cta-button">Kontakt aufnehmen</a>
-    </div>
-  </section>
+<style>
+  footer a { transition: color 0.3s ease; }
+  footer a:hover { color: #008CBA; }
+</style>
 
-  <!-- Impressum -->
-  <section class="section" id="impressum" aria-label="Impressum">
-    <h2 class="section-title">Impressum</h2>
-    <p class="section-subtitle">Angaben gemäß § 5 TMG</p>
 
-    <div style="max-width:800px; margin:0 auto; text-align:left; color:#333;">
-      <p><strong>PersCraft</strong><br/>
-        Inhaber: Anas Awni<br/>
-        Silvanastraße 7, 81927 München, Deutschland<br/>
-        E-Mail: <a href="mailto:perscraftde@gmail.com">perscraftde@gmail.com</a><br/>
-        USt-IdNr.: DE455102759
-      </p>
+<style>
+  footer a {
+    transition: color 0.3s ease;
+  }
+  footer a:hover {
+    color: #008CBA; /* schönes Blau beim Hover */
+  }
+</style>
 
-      <p><strong>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV:</strong><br/>
-        Anas Awni, Silvanastraße 7, 81927 München
-      </p>
 
-      <h3 style="margin-top:24px;">Haftungsausschluss</h3>
-      <p>Die Inhalte dieser Website wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich.</p>
+<!-- Cookie Banner -->
+<div id="cookie-banner" style="position:fixed; bottom:0; left:0; right:0; background:#222; color:#fff; padding:15px; text-align:center; font-size:14px; display:none; z-index:1000;">
+  Diese Website verwendet Cookies, um Ihnen die bestmögliche Nutzung zu ermöglichen. 
+  <a href="/datenschutz.html" style="color:#4EA8DE; text-decoration:underline;">Mehr erfahren</a>
+  <button id="cookie-accept" style="margin-left:15px; padding:6px 12px; border:none; border-radius:4px; cursor:pointer; font-size:14px; background:#4CAF50; color:#fff;">Akzeptieren</button>
+  <button id="cookie-decline" style="margin-left:8px; padding:6px 12px; border:none; border-radius:4px; cursor:pointer; font-size:14px; background:#d9534f; color:#fff;">Ablehnen</button>
+</div>
 
-      <h3 style="margin-top:16px;">Urheberrecht</h3>
-      <p>Die durch den Seitenbetreiber erstellten Inhalte und Werke auf dieser Website unterliegen dem deutschen Urheberrecht. Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechts bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
-    </div>
-  </section>
-
-  <!-- Datenschutz -->
-  <section class="section" id="datenschutz" aria-label="Datenschutzerklärung">
-    <h2 class="section-title">Datenschutzerklärung</h2>
-    <p class="section-subtitle">Stand: September 2025</p>
-
-    <div style="max-width:800px; margin:0 auto; text-align:left; color:#333;">
-      <h3>1. Verantwortlicher</h3>
-      <p>PersCraft – Inh. Anas Awni<br/>
-        Silvanastraße 7, 81927 München, Deutschland<br/>
-        E-Mail: <a href="mailto:perscraftde@gmail.com">perscraftde@gmail.com</a>
-      </p>
-
-      <h3>2. Erhebung und Speicherung personenbezogener Daten</h3>
-      <p>Beim Besuch unserer Website werden automatisch Informationen erhoben, die Ihr Browser an unseren Server übermittelt (z. B. IP-Adresse, Browsertyp, besuchte Seiten, Datum und Uhrzeit). Diese Daten sind nicht bestimmten Personen zuordenbar und dienen ausschließlich der Sicherstellung eines störungsfreien Betriebs der Website.</p>
-
-      <h3>3. Kontaktaufnahme</h3>
-      <p>Wenn Sie uns per E-Mail kontaktieren, werden Ihre Angaben zur Bearbeitung der Anfrage gespeichert. Eine Weitergabe an Dritte erfolgt nicht ohne Ihre Einwilligung.</p>
-
-      <h3>4. Cookies</h3>
-      <p>Unsere Website verwendet Cookies. Cookies sind kleine Textdateien, die auf Ihrem Endgerät gespeichert werden. Sie dienen der Benutzerfreundlichkeit sowie statistischen Zwecken. Sie können die Speicherung von Cookies in den Einstellungen Ihres Browsers deaktivieren. Bereits gespeicherte Cookies können jederzeit gelöscht werden.</p>
-
-      <h3>5. Google Maps</h3>
-      <p>Diese Website nutzt ggf. den Kartendienst Google Maps, ein Angebot der Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland. Durch die Nutzung können Daten (z. B. Ihre IP-Adresse) an Google übertragen werden. Weitere Informationen finden Sie in der <a href="https://policies.google.com/privacy?hl=de" target="_blank" rel="noopener">Datenschutzerklärung von Google</a>.</p>
-
-      <h3>6. Google Fonts</h3>
-      <p>Zur einheitlichen Darstellung von Schriftarten können Web Fonts (Google Fonts) eingesetzt werden. Beim Aufruf unserer Seiten lädt Ihr Browser die benötigten Fonts in den Cache. Dabei wird Ihre IP-Adresse an Server von Google übertragen. Details in den <a href="https://developers.google.com/fonts/faq" target="_blank" rel="noopener">Google Fonts FAQ</a> sowie der <a href="https://policies.google.com/privacy?hl=de" target="_blank" rel="noopener">Datenschutzerklärung von Google</a>.</p>
-
-      <h3>7. Hosting</h3>
-      <p>Unsere Website wird bei einem externen Hosting-Anbieter betrieben. Alle erhobenen Daten werden auf den Servern des Hosters gespeichert. Dazu gehören IP-Adressen, Zugriffe, Logfiles und sonstige technische Daten, die für den Betrieb der Website erforderlich sind.</p>
-
-      <h3>8. Rechtsgrundlagen der Verarbeitung</h3>
-      <p>Sofern die Verarbeitung personenbezogener Daten zur Erfüllung eines Vertrags dient oder zur Durchführung vorvertraglicher Maßnahmen erforderlich ist, erfolgt sie auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO. In übrigen Fällen stützen wir die Verarbeitung auf Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einem sicheren, funktionsfähigen Webauftritt).</p>
-
-      <h3>9. Ihre Rechte</h3>
-      <p>Sie haben jederzeit das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit sowie Widerspruch gegen die Verarbeitung Ihrer personenbezogenen Daten (Art. 15–21 DSGVO).</p>
-
-      <h3>10. Beschwerderecht</h3>
-      <p>Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde über die Verarbeitung Ihrer personenbezogenen Daten durch uns zu beschweren (Art. 77 DSGVO).</p>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-content">
-      <ul class="footer-links">
-        <li><a href="#impressum">Impressum</a></li>
-        <li><a href="#datenschutz">Datenschutzerklärung</a></li>
-      </ul>
-      <p>© 2025 PersCraft – Inh. Anas Awni. Alle Rechte vorbehalten.</p>
-      <p>E-Mail: <a href="mailto:perscraftde@gmail.com">perscraftde@gmail.com</a></p>
-    </div>
-  </footer>
-
-  <!-- Cookie Banner -->
-  <div id="cookie-banner">
-    Diese Website verwendet Cookies, um Ihnen die bestmögliche Nutzung zu ermöglichen.
-    <a href="#datenschutz">Mehr erfahren</a>
-    <button id="cookie-accept">Akzeptieren</button>
-    <button id="cookie-decline">Ablehnen</button>
-  </div>
-
-  <script>
-    // Theme Toggle
-    const themeToggle = document.getElementById('theme-toggle');
-    const body = document.body;
-    themeToggle.addEventListener('click', () => {
-      if (body.getAttribute('data-theme') === 'light') {
-        body.setAttribute('data-theme', 'dark');
-        themeToggle.textContent = 'Light Mode';
-      } else {
-        body.setAttribute('data-theme', 'light');
-        themeToggle.textContent = 'Dark Mode';
-      }
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (!localStorage.getItem("cookieConsent")) {
+      document.getElementById("cookie-banner").style.display = "block";
+    }
+    document.getElementById("cookie-accept").addEventListener("click", function () {
+      localStorage.setItem("cookieConsent", "accepted");
+      document.getElementById("cookie-banner").style.display = "none";
     });
-
-    // Parallax
-    window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY;
-      const hero = document.querySelector('.hero');
-      const parallaxBg = document.querySelector('.parallax-background');
-      if (scrollY <= hero.offsetHeight) {
-        parallaxBg.style.transform = `translateY(${scrollY * 0.5}px)`;
-      }
+    document.getElementById("cookie-decline").addEventListener("click", function () {
+      localStorage.setItem("cookieConsent", "declined");
+      document.getElementById("cookie-banner").style.display = "none";
     });
+  });
+</script>
 
-    // Scroll-in Animation
-    const animatedElements = document.querySelectorAll('.section-title, .section-subtitle, .service, .dark-mode-content, .cta-content');
-    const checkScroll = () => {
-      animatedElements.forEach(el => {
-        const elementTop = el.getBoundingClientRect().top;
-        const triggerPoint = window.innerHeight * 0.8;
-        if (elementTop < triggerPoint) el.classList.add('visible');
-      });
-    };
-    window.addEventListener('load', checkScroll);
-    window.addEventListener('scroll', checkScroll);
 
-    // Cookie Banner Logik
-    document.addEventListener("DOMContentLoaded", function () {
-      if (!localStorage.getItem("cookieConsent")) {
-        document.getElementById("cookie-banner").style.display = "block";
-      }
-      document.getElementById("cookie-accept").addEventListener("click", function () {
-        localStorage.setItem("cookieConsent", "accepted");
-        document.getElementById("cookie-banner").style.display = "none";
-      });
-      document.getElementById("cookie-decline").addEventListener("click", function () {
-        localStorage.setItem("cookieConsent", "declined");
-        document.getElementById("cookie-banner").style.display = "none";
-      });
-    });
-  </script>
+
+ 
+    <script>
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        
+        themeToggle.addEventListener('click', () => {
+            if (body.getAttribute('data-theme') === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = 'Light Mode';
+            } else {
+                body.setAttribute('data-theme', 'light');
+                themeToggle.textContent = 'Dark Mode';
+            }
+        });
+        
+        // Parallax Effect
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const hero = document.querySelector('.hero');
+            const parallaxBg = document.querySelector('.parallax-background');
+            
+            if (scrollY <= hero.offsetHeight) {
+                parallaxBg.style.transform = `translateY(${scrollY * 0.5}px)`;
+            }
+        });
+        
+        // Scroll Animation
+        const animatedElements = document.querySelectorAll('.section-title, .section-subtitle, .service, .dark-mode-content, .cta-content');
+        
+        const checkScroll = () => {
+            animatedElements.forEach(el => {
+                const elementTop = el.getBoundingClientRect().top;
+                const triggerPoint = window.innerHeight * 0.8;
+                
+                if (elementTop < triggerPoint) {
+                    el.classList.add('visible');
+                }
+            });
+        };
+        
+        // Check on initial load
+        window.addEventListener('load', checkScroll);
+        
+        // Check on scroll
+        window.addEventListener('scroll', checkScroll);
+    </script>
 </body>
 </html>
+
+
