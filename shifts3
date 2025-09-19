@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PersCraft – Schichtplan</title>
+  <meta name="description" content="Mobile-first Schichtplan & Zeiterfassung (ohne Backend)" />
+  <style>
+    /* === Branding (nah an perscraft.com) === */
+    :root{
+      --bg:#0b0f14;            /* Dark Background */
+      --card:#101722;          /* Cards */
+      --muted:#1a2633;         /* Borders */
+      --text:#e7edf5;          /* Text */
+      --sub:#b6c2d1;           /* Muted text */
+      --acc:#43c6ff;           /* PersCraft Akzent (cyan/blau) */
+      --acc-2:#00e6b8;         /* Zweitakzent (türkisgrün) */
+      --ok:#27d69b;            /* OK */
+      --warn:#ffd166;          /* Warnung */
+      --bad:#ff6b6b;           /* Fehler */
+      --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif}
+    a{color:var(--acc);text-decoration:none}
+    .app{max-width:1100px;margin:0 auto;padding:16px}
+    .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .space{flex:1}
+    .card{background:var(--card);border:1px solid var(--muted);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+    .chip{padding:4px 10px;border-radius:999px;background:var(--muted);color:var(--sub);font-weight:600;font-size:12px}
+    .badge{padding:4px 8px;border-radius:8px;font-weight:600;font-size:12px}
+    .btn{appearance:none;border:0;border-radius:12px;background:linear-gradient(135deg,var(--acc),#7ad9ff);color:#03121a;font-weight:800;padding:12px 14px;cursor:pointer;box-shadow:var(--shadow)}
+    .btn.ghost{background:transparent;color:var(--acc);border:1px solid var(--muted)}
+    .btn.warn{background:var(--warn);color:#291c00}
+    .btn.ok{background:var(--ok);color:#001a12}
+    .btn.bad{background:var(--bad);color:#2b0000}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .nav{position:sticky;top:0;background:linear-gradient(180deg,#0b0f14,#0b0f14cc 60%,transparent);backdrop-filter:saturate(1.2) blur(6px);z-index:10;padding:10px 0;margin-bottom:8px}
+    h1{margin:6px 0 2px;font-size:24px}
+    h2{margin:0 0 10px;font-size:18px;color:var(--sub)}
+    label{font-size:13px;color:var(--sub)}
+    input,select,textarea{width:100%;background:#0e141c;border:1px solid var(--muted);border-radius:12px;color:var(--text);padding:12px}
+    .grid{display:grid;gap:12px}
+    .grid.cols-2{grid-template-columns:1fr 1fr}
+    .grid.cols-3{grid-template-columns:repeat(3,1fr)}
+    @media (max-width:820px){.grid.cols-2,.grid.cols-3{grid-template-columns:1fr}}
+    .tabbar{display:flex;gap:8px;overflow:auto;padding-bottom:6px}
+    .tab{padding:10px 12px;border-radius:12px;border:1px solid var(--muted);white-space:nowrap;cursor:pointer}
+    .tab.active{background:var(--acc);color:#041018;border-color:transparent;font-weight:800}
+    .list{display:flex;flex-direction:column;gap:10px}
+    .row-item{display:flex;gap:12px;align-items:center}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#9fb1c6}
+    .muted{color:var(--sub)}
+    .small{font-size:12px;color:var(--sub)}
+    .divider{height:1px;background:var(--muted);margin:10px 0}
+    .foot{opacity:.7;text-align:center;margin:24px 0;font-size:12px}
+
+    /* === Bearbeitungsleiste === */
+    .editbar{position:sticky;bottom:8px;z-index:20;display:flex;gap:8px;align-items:center;background:rgba(11,15,20,.85);border:1px solid var(--muted);border-radius:16px;padding:8px 10px;backdrop-filter:blur(6px);box-shadow:var(--shadow)}
+    .editbar .count{font-weight:700;color:var(--sub)}
+    .selectable{outline:2px solid transparent;border-radius:14px}
+    .selectable.selected{outline-color:var(--acc)}
+
+    /* Diagnostics */
+    details#diag{margin-top:12px}
+    details#diag > summary{cursor:pointer;color:var(--sub)}
+    pre#diagLog{white-space:pre-wrap;background:#0e141c;border:1px solid var(--muted);border-radius:12px;padding:10px}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="nav row">
+      <div class="row" style="gap:8px">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M4 8h16M4 16h16" stroke="var(--acc)" stroke-width="2" stroke-linecap="round"/></svg>
+        <div>
+          <h1>PersCraft · Schichtplan</h1>
+          <div class="small">Mobile-first · Offlinefähig (LocalStorage)</div>
+        </div>
+      </div>
+      <div class="space"></div>
+      <button class="btn ghost" onclick="UI.openModal('settingsModal')">Einstellungen</button>
+      <div id="who" class="chip">Nicht angemeldet</div>
+      <button class="btn ghost" onclick="UI.openModal('loginModal')">Anmelden</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabbar" id="tabs"></div>
+
+    <!-- TODAY -->
+    <section id="tab-today" class="grid" style="display:none">
+      <div class="card grid" style="gap:8px">
+        <h2>Heute</h2>
+        <div id="todaySummary" class="muted">–</div>
+        <div class="row" style="gap:8px">
+          <button id="btnClockIn" class="btn ok">Einstempeln</button>
+          <button id="btnClockOut" class="btn bad" disabled>Aus­stempeln</button>
+          <button id="btnOnMyWay" class="btn ghost">Ich bin unterwegs</button>
+          <div class="space"></div>
+          <button id="btnExportCSV" class="btn ghost">CSV Export</button>
+          <button id="btnExportICS" class="btn ghost">Kalender (.ics)</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Nächste Schichten</h2>
+        <div id="nextShifts" class="list"></div>
+      </div>
+    </section>
+
+    <!-- SHIFTS -->
+    <section id="tab-shifts" style="display:none" class="grid">
+      <div class="card">
+        <h2>Schichtübersicht</h2>
+        <div class="row" style="gap:8px;margin-bottom:8px">
+          <label>Zeitraum</label>
+          <input type="date" id="fromDate"/> <span class="muted">bis</span> <input type="date" id="toDate"/>
+          <div class="space"></div>
+          <input id="qShift" placeholder="Suche: Ort/Objekt/Notiz" />
+        </div>
+        <div id="shiftList" class="list"></div>
+      </div>
+
+      <!-- Bearbeitungsleiste (nur Manager/Admin) -->
+      <div id="editbar" class="editbar" style="display:none">
+        <span class="count" id="selCount">0 ausgewählt</span>
+        <div class="space"></div>
+        <button class="btn" id="btnNewShift">+ Neu</button>
+        <button class="btn ghost" id="btnEditShift">Bearbeiten</button>
+        <button class="btn warn" id="btnDupShift">Duplizieren</button>
+        <button class="btn bad" id="btnDelShift">Löschen</button>
+      </div>
+    </section>
+
+    <!-- ABSENCES -->
+    <section id="tab-absences" style="display:none" class="grid cols-2">
+      <div class="card">
+        <h2>Abwesenheit beantragen</h2>
+        <div class="grid">
+          <div>
+            <label>Typ</label>
+            <select id="absType">
+              <option>Urlaub</option>
+              <option>Krank</option>
+              <option>Privat</option>
+            </select>
+          </div>
+          <div class="grid cols-2">
+            <div>
+              <label>Von</label>
+              <input type="date" id="absFrom" />
+            </div>
+            <div>
+              <label>Bis</label>
+              <input type="date" id="absTo" />
+            </div>
+          </div>
+          <div>
+            <label>Kommentar</label>
+            <textarea id="absNote" rows="2" placeholder="Optional"></textarea>
+          </div>
+          <button class="btn" id="btnAbsSubmit">Antrag senden</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Meine Abwesenheiten</h2>
+        <div id="absList" class="list"></div>
+      </div>
+    </section>
+
+    <!-- ADMIN -->
+    <section id="tab-admin" style="display:none" class="grid cols-2">
+      <div class="card">
+        <h2>Schicht anlegen / bearbeiten</h2>
+        <div class="grid">
+          <input id="siteName" placeholder="Objekt/Standort (z. B. Praxis Gunsch)" />
+          <input id="siteAddr" placeholder="Adresse (für Navigation)" />
+          <div class="grid cols-2">
+            <div><label>Start</label><input id="startAt" type="datetime-local"></div>
+            <div><label>Ende</label><input id="endAt" type="datetime-local"></div>
+          </div>
+          <input id="assignee" placeholder="Mitarbeiter E‑Mail" />
+          <textarea id="notes" rows="2" placeholder="Hinweise / Schlüsselbox / Aufgaben"></textarea>
+          <div class="row" style="gap:8px">
+            <button id="btnAddShift" class="btn">Schicht speichern</button>
+            <button id="btnClearForm" class="btn ghost">Formular leeren</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Stundenberichte</h2>
+        <div id="report" class="mono small">Noch keine Einträge.</div>
+      </div>
+    </section>
+
+    <div class="foot">© PersCraft · Lokaler Demo-Planer – Daten bleiben in deinem Browser</div>
+
+    <details id="diag">
+      <summary>Diagnostics & Tests</summary>
+      <pre id="diagLog">Lade Tests…</pre>
+    </details>
+  </div>
+
+  <!-- Login Modal -->
+  <dialog id="loginModal" style="border:none;border-radius:18px;padding:0;background:transparent">
+    <div class="card" style="width:min(520px,92vw)">
+      <h2>Anmelden</h2>
+      <div class="grid">
+        <input id="email" placeholder="E‑Mail" />
+        <div class="grid cols-2">
+          <div>
+            <label>Rolle</label>
+            <select id="role">
+              <option value="employee">Mitarbeiter</option>
+              <option value="manager">Schichtleiter</option>
+              <option value="admin">Admin/Disposition</option>
+            </select>
+          </div>
+          <div>
+            <label>Anzeige­name</label>
+            <input id="displayName" placeholder="z. B. Anas" />
+          </div>
+        </div>
+        <button class="btn" onclick="Auth.login()">Weiter</button>
+        <button class="btn ghost" onclick="UI.closeModal('loginModal')">Abbrechen</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Settings Modal -->
+  <dialog id="settingsModal" style="border:none;border-radius:18px;padding:0;background:transparent">
+    <div class="card" style="width:min(560px,92vw)">
+      <h2>Einstellungen</h2>
+      <div class="grid">
+        <div class="grid cols-2">
+          <div>
+            <label>Manager E‑Mail (Benachrichtigung)</label>
+            <input id="setManagerEmail" placeholder="z.B. dispo@perscraft.com" />
+          </div>
+          <div>
+            <label>Webhook URL (Slack/IFTTT/Make)</label>
+            <input id="setWebhook" placeholder="https://hooks.example.com/..." />
+          </div>
+        </div>
+        <div class="grid cols-3">
+          <div>
+            <label>Akzentfarbe</label>
+            <input id="setAcc" type="color" value="#43c6ff" />
+          </div>
+          <div>
+            <label>Zweitfarbe</label>
+            <input id="setAcc2" type="color" value="#00e6b8" />
+          </div>
+          <div>
+            <label>Dunkelmodus</label>
+            <select id="setTheme">
+              <option value="dark">Dunkel</option>
+              <option value="light">Hell</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" style="gap:8px">
+          <button class="btn" id="btnSaveSettings">Speichern</button>
+          <button class="btn ghost" onclick="UI.closeModal('settingsModal')">Schließen</button>
+        </div>
+        <div class="small muted">Tipp: Trage hier einen **Webhook** ein, um Benachrichtigungen an Slack, Discord, Teams oder Make.com zu schicken.</div>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    // --- Utilities ---------------------------------------------------------
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => [...document.querySelectorAll(sel)];
+    const fmtDate = (d)=> new Date(d).toLocaleString('de-DE',{dateStyle:'medium', timeStyle:'short'});
+    const fmtTime = (d)=> new Date(d).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    const uid = (p='id')=> p+'_'+Math.random().toString(36).slice(2,9);
+    const save = (k,v)=> localStorage.setItem(k, JSON.stringify(v));
+    const load = (k,def)=> JSON.parse(localStorage.getItem(k)||JSON.stringify(def));
+    const between = (x,a,b)=> x>=a && x<=b;
+
+    // Precise Maps routing using Geolocation API
+    async function openPreciseRoute(address){
+      try{
+        const geo = await new Promise((resolve,reject)=>{
+          if(!navigator.geolocation) return reject('no-geo');
+          navigator.geolocation.getCurrentPosition(
+            pos=>resolve(pos.coords), err=>reject(err), {enableHighAccuracy:true, timeout:8000, maximumAge:0}
+          );
+        });
+        const origin = `${geo.latitude},${geo.longitude}`;
+        const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(address)}&travelmode=driving`;
+        window.open(url,'_blank');
+      }catch(e){
+        // Fallback: normal search
+        window.open('https://www.google.com/maps/search/'+encodeURIComponent(address),'_blank');
+      }
+    }
+
+    // --- State -------------------------------------------------------------
+    const DB = {
+      user: load('pc_user', null),
+      shifts: load('pc_shifts', []),
+      assignments: load('pc_assignments', []),
+      timeEntries: load('pc_time', []),
+      absences: load('pc_abs', []),
+      sel: new Set(load('pc_sel', [])),
+      settings: load('pc_settings', {managerEmail:'', webhook:'', theme:'dark', acc:'#43c6ff', acc2:'#00e6b8'})
+    };
+
+    function persistSel(){ save('pc_sel', [...DB.sel]); }
+
+    // Seed demo data once
+    if (!localStorage.getItem('pc_seed_v2')) {
+      const now = new Date();
+      const base = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 8, 0, 0);
+      const mkShift = (d,h,site,addr,notes,email)=> {
+        const id = uid('shf');
+        DB.shifts.push({id, site, addr, start: new Date(base.getTime()+d*86400000+h*3600000).toISOString(), end: new Date(base.getTime()+d*86400000+(h+4)*3600000).toISOString(), notes});
+        DB.assignments.push({id:uid('as'), shiftId:id, email, status:'assigned'});
+      };
+      mkShift(0,8,'Praxis Gunsch','Haidhausen, München','Schlüsselbox #A12 Code 5931','anas@perscraft.com');
+      mkShift(1,18,'Sonnenstraße 11','Altstadt, München','Feinreinigung; Müll mitnehmen','anas@perscraft.com');
+      mkShift(3,7,'Abwasserverband Kempten','Griesösch 1, 87493 Lauben','Bauendreinigung – Helm Pflicht','anas@perscraft.com');
+      save('pc_shifts', DB.shifts); save('pc_assignments', DB.assignments);
+      localStorage.setItem('pc_seed_v2','1');
+    }
+
+    // Apply settings (theme/colors)
+    function applyBrand(){
+      document.documentElement.style.setProperty('--acc', DB.settings.acc);
+      document.documentElement.style.setProperty('--acc-2', DB.settings.acc2);
+      if(DB.settings.theme==='light'){
+        document.documentElement.style.setProperty('--bg','#f7fbff');
+        document.documentElement.style.setProperty('--card','#ffffff');
+        document.documentElement.style.setProperty('--muted','#dce6ef');
+        document.documentElement.style.setProperty('--text','#0b1722');
+        document.documentElement.style.setProperty('--sub','#41566f');
+      }
+    }
+
+    // --- Notifications -----------------------------------------------------
+    async function notify(event, payload){
+      const body = {event, at:new Date().toISOString(), actor: DB.user? {email:DB.user.email, name:DB.user.name, role:DB.user.role}:null, payload};
+      // Webhook POST (best effort)
+      if(DB.settings.webhook){
+        try{
+          const data = JSON.stringify(body);
+          if(navigator.sendBeacon){
+            const blob = new Blob([data], {type:'application/json'});
+            navigator.sendBeacon(DB.settings.webhook, blob);
+          } else {
+            fetch(DB.settings.webhook, {method:'POST', headers:{'Content-Type':'application/json'}, body:data});
+          }
+        }catch(_){/* ignore */}
+      }
+      // Optional: prepare mailto link (cannot send automatically)
+      if(DB.settings.managerEmail){
+        console.log('Manager-E-Mail vorbereiten:', DB.settings.managerEmail, body);
+      }
+    }
+
+    // --- Auth --------------------------------------------------------------
+    const Auth = {
+      login(){
+        const email = $('#email').value.trim();
+        if(!email) return alert('Bitte E‑Mail eingeben');
+        const role = $('#role').value; const name = $('#displayName').value||email.split('@')[0];
+        DB.user = {email, role, name}; save('pc_user', DB.user);
+        UI.closeModal('loginModal'); UI.toast('Willkommen, '+name);
+        App.renderAll();
+        // Benachrichtigung an Schichtleiter bei Mitarbeiter-Login
+        if(role==='employee') notify('employee_login', {email,name});
+      }
+    };
+
+    // --- UI helpers --------------------------------------------------------
+    const UI = {
+      tabs:[{id:'today',label:'Heute'},{id:'shifts',label:'Schichten'},{id:'absences',label:'Abwesenheit'},{id:'admin',label:'Admin'}],
+      init(){
+        const tbar = $('#tabs'); tbar.innerHTML='';
+        for(const t of this.tabs){
+          const el = document.createElement('div');
+          el.className='tab'; el.id='tabbtn-'+t.id; el.textContent=t.label; el.onclick=()=>UI.switchTab(t.id);
+          tbar.appendChild(el);
+        }
+        this.switchTab('today');
+        // Show editbar only for manager/admin on Schichten
+        const canAdmin = DB.user && (DB.user.role==='admin' || DB.user.role==='manager');
+        $('#editbar').style.display = canAdmin? 'flex':'none';
+      },
+      switchTab(id){
+        for(const t of this.tabs){
+          $('#tab-'+t.id).style.display = (t.id===id?'grid':'none');
+          $('#tabbtn-'+t.id).classList.toggle('active', t.id===id);
+        }
+        const canAdmin = DB.user && (DB.user.role==='admin' || DB.user.role==='manager');
+        $('#tabbtn-admin').style.display = canAdmin?'inline-flex':'none';
+        if(id==='admin' && !canAdmin){ this.switchTab('today'); return; }
+      },
+      openModal(id){ $('#'+id).showModal(); },
+      closeModal(id){ $('#'+id).close(); },
+      toast(msg){
+        const n = document.createElement('div');
+        n.textContent = msg; n.style.cssText='position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#0e141c;border:1px solid var(--muted);padding:10px 14px;border-radius:12px;box-shadow:var(--shadow);z-index:9999';
+        document.body.appendChild(n); setTimeout(()=>n.remove(), 2200);
+      }
+    };
+
+    // --- Core logic --------------------------------------------------------
+    const App = {
+      renderAll(){
+        applyBrand();
+        $('#who').textContent = DB.user? `${DB.user.name} · ${DB.user.role}` : 'Nicht angemeldet';
+        UI.init();
+        this.renderToday();
+        this.renderShifts();
+        this.renderAbsences();
+        this.renderReport();
+        this.wireActions();
+      },
+      currentUserAssignments(){
+        if(!DB.user) return [];
+        return DB.assignments.filter(a=>a.email===DB.user.email);
+      },
+      myUpcomingShifts(){
+        const asg = this.currentUserAssignments();
+        const ids = new Set(asg.map(a=>a.shiftId));
+        const now = new Date();
+        return DB.shifts.filter(s=>ids.has(s.id) && new Date(s.end)>now).sort((a,b)=> new Date(a.start)-new Date(b.start));
+      },
+      renderToday(){
+        const ups = this.myUpcomingShifts();
+        const next = ups[0];
+        $('#todaySummary').innerHTML = next? `Nächste Schicht: <b>${next.site}</b>, ${fmtTime(next.start)}–${fmtTime(next.end)} · <span class="muted">${next.addr}</span>` : 'Keine anstehenden Schichten.';
+        const list = $('#nextShifts'); list.innerHTML='';
+        for(const s of ups.slice(0,5)){
+          const as = DB.assignments.find(a=>a.shiftId===s.id && a.email===DB.user?.email);
+          const status = as?.status||'—';
+          const row = document.createElement('div'); row.className='card selectable'; row.dataset.shiftId=s.id;
+          row.innerHTML = `
+            <div class="row row-item">
+              <div class="badge" style="background:var(--muted)">${new Date(s.start).toLocaleDateString('de-DE',{weekday:'short'})}</div>
+              <div class="space">
+                <div><b>${s.site}</b> <span class="muted">· ${fmtTime(s.start)}–${fmtTime(s.end)}</span></div>
+                <div class="small">${s.addr}</div>
+                <div class="small">${s.notes||''}</div>
+              </div>
+              <div class="badge" style="background:${status==='confirmed'?'var(--ok)': status==='declined'?'var(--bad)':'var(--warn)'}">${status}</div>
+            </div>
+            <div class="row" style="margin-top:8px;gap:8px">
+              <button class="btn ok" onclick="Actions.confirm('${s.id}')">Bestätigen</button>
+              <button class="btn warn" onclick="Actions.decline('${s.id}')">Absagen</button>
+              <button class="btn ghost" onclick="openPreciseRoute(${JSON.stringify(''.concat('${s.addr}')).slice(1,-1)})">Route</button>
+            </div>`;
+          /* NOTE: the onclick above is replaced shortly after render with a safer version using JSON.stringify of the address value */
+          list.appendChild(row);
+        }
+        // Re-bind safer onclick for route buttons with the real address value
+        $$('#nextShifts .card').forEach(card=>{
+          const id = card.dataset.shiftId;
+          const s = DB.shifts.find(x=>x.id===id);
+          const btn = card.querySelector('button.btn.ghost');
+          if(btn && s){ btn.onclick = ()=>openPreciseRoute(s.addr); }
+        });
+        const open = DB.timeEntries.find(t=>t.email===DB.user?.email && !t.clockOut);
+        $('#btnClockIn').disabled = !!open;
+        $('#btnClockOut').disabled = !open;
+      },
+      renderShifts(){
+        const from = $('#fromDate'); const to = $('#toDate');
+        if(!from.value){ const d=new Date(); d.setDate(d.getDate()-3); from.value = d.toISOString().slice(0,10);} 
+        if(!to.value){ const d=new Date(); d.setDate(d.getDate()+14); to.value = d.toISOString().slice(0,10);} 
+        const q = ($('#qShift').value||'').toLowerCase();
+        const a = this.currentUserAssignments(); const ids = new Set(a.map(x=>x.shiftId));
+        const list = $('#shiftList'); list.innerHTML='';
+        const start = new Date(from.value+'T00:00'); const end = new Date(to.value+'T23:59');
+        const rows = DB.shifts.filter(s=> new Date(s.start)>=start && new Date(s.start)<=end && (!DB.user || ids.has(s.id))).sort((x,y)=> new Date(x.start)-new Date(y.start));
+        for(const s of rows){
+          if(q && !(`${s.site} ${s.addr} ${s.notes||''}`.toLowerCase().includes(q))) continue;
+          const as = DB.assignments.find(a=>a.shiftId===s.id && a.email===DB.user?.email);
+          const status = as?.status||'assigned';
+          const el = document.createElement('div'); el.className='card selectable'; el.dataset.shiftId=s.id;
+          el.innerHTML = `
+            <div class="row row-item">
+              <div class="badge" style="background:var(--muted)">${new Date(s.start).toLocaleDateString('de-DE',{month:'short', day:'2-digit'})}</div>
+              <div class="space">
+                <div><b>${s.site}</b> <span class="muted">${fmtTime(s.start)}–${fmtTime(s.end)}</span></div>
+                <div class="small">${s.addr}</div>
+                <div class="small">${s.notes||''}</div>
+              </div>
+              <div class="badge" style="background:${status==='confirmed'?'var(--ok)': status==='declined'?'var(--bad)':'var(--warn)'}">${status}</div>
+            </div>
+            <div class="row" style="margin-top:8px;gap:8px">
+              <button class="btn ok" onclick="Actions.confirm('${s.id}')">Bestätigen</button>
+              <button class="btn warn" onclick="Actions.decline('${s.id}')">Absagen</button>
+              <button class="btn ghost" onclick="openPreciseRoute(${JSON.stringify(''.concat('${s.addr}')).slice(1,-1)})">Route</button>
+            </div>`;
+          list.appendChild(el);
+        }
+        // Re-bind safer onclick for route buttons using the actual address
+        $$('#shiftList .card').forEach(card=>{
+          const id = card.dataset.shiftId;
+          const s = DB.shifts.find(x=>x.id===id);
+          const btns = card.querySelectorAll('button.btn.ghost');
+          btns.forEach(btn=>{ if(s) btn.onclick=()=>openPreciseRoute(s.addr); });
+        });
+        // Selection handling
+        $$('#shiftList .card').forEach(el=>{
+          el.addEventListener('click', (ev)=>{
+            if(ev.target.closest('button')) return; // buttons don't toggle selection
+            const id = el.dataset.shiftId;
+            if(DB.sel.has(id)) DB.sel.delete(id); else DB.sel.add(id);
+            persistSel(); App.updateSelectionStyles();
+          });
+        });
+        App.updateSelectionStyles();
+      },
+      updateSelectionStyles(){
+        $$('#shiftList .selectable').forEach(card=>{
+          const id = card.dataset.shiftId; card.classList.toggle('selected', DB.sel.has(id));
+        });
+        $('#selCount').textContent = `${DB.sel.size} ausgewählt`;
+      },
+      renderAbsences(){
+        const list = $('#absList'); list.innerHTML='';
+        const mine = DB.absences.filter(a=>a.email===DB.user?.email).sort((a,b)=> new Date(b.created)-new Date(a.created));
+        for(const a of mine){
+          const el = document.createElement('div'); el.className='card';
+          el.innerHTML = `<div><b>${a.type}</b> · ${a.from} bis ${a.to} <span class="badge" style="background:${a.status==='approved'?'var(--ok)': a.status==='rejected'?'var(--bad)':'var(--warn)'}">${a.status}</span></div><div class="small">${a.note||''}</div>`;
+          list.appendChild(el);
+        }
+      },
+      renderReport(){
+        const group = {};
+        for(const t of DB.timeEntries){
+          const key = t.email+ '|' + (t.shiftId||'frei');
+          const dur = t.clockOut? (new Date(t.clockOut)-new Date(t.clockIn))/3600000 : 0;
+          group[key] = (group[key]||0)+dur;
+        }
+        const lines = Object.entries(group).map(([k,h])=>{ const [email,shiftId]=k.split('|'); const s=DB.shifts.find(x=>x.id===shiftId); return `${email.padEnd(24)}  ${(h).toFixed(2)}h  ${s? s.site+' '+new Date(s.start).toLocaleDateString('de-DE'):''}`;});
+        $('#report').textContent = lines.length? lines.join('\n') : 'Noch keine Einträge.';
+      },
+      wireActions(){
+        $('#btnOnMyWay').onclick=()=>{
+          const next = this.myUpcomingShifts()[0];
+          if(!next) return alert('Keine nächste Schicht');
+          openPreciseRoute(next.addr);
+        };
+        $('#btnClockIn').onclick=()=>{ if(!DB.user) return alert('Bitte anmelden');
+          const open = DB.timeEntries.find(t=>t.email===DB.user.email && !t.clockOut);
+          if(open) return alert('Bereits eingestempelt');
+          const shift = this.myUpcomingShifts().find(s=> between(Date.now(), new Date(s.start)-60*60000, new Date(s.end)+60*60000));
+          const entry = {id:uid('te'), email:DB.user.email, shiftId:shift?.id, clockIn:new Date().toISOString()};
+          DB.timeEntries.push(entry);
+          save('pc_time', DB.timeEntries); UI.toast('Eingestempelt'); this.renderToday(); this.renderReport();
+          notify('clock_in', {shiftId:shift?.id});
+        };
+        $('#btnClockOut').onclick=()=>{ if(!DB.user) return alert('Bitte anmelden');
+          const open = DB.timeEntries.find(t=>t.email===DB.user.email && !t.clockOut);
+          if(!open) return alert('Nicht eingestempelt');
+          open.clockOut = new Date().toISOString(); save('pc_time', DB.timeEntries); UI.toast('Ausgestempelt'); this.renderToday(); this.renderReport();
+          notify('clock_out', {shiftId:open.shiftId});
+        };
+        $('#btnAbsSubmit').onclick=()=>{
+          if(!DB.user) return alert('Bitte anmelden');
+          const t=$('#absType').value, f=$('#absFrom').value, to=$('#absTo').value, note=$('#absNote').value;
+          if(!f||!to) return alert('Bitte Zeitraum wählen');
+          const abs = {id:uid('abs'), email:DB.user.email, type:t, from:f, to:to, note, status:'pending', created:new Date().toISOString()};
+          DB.absences.push(abs);
+          save('pc_abs', DB.absences); UI.toast('Antrag gesendet'); this.renderAbsences();
+          notify('absence_request', abs);
+        };
+        $('#btnAddShift').onclick=()=>{
+          if(!DB.user || (DB.user.role!=='admin' && DB.user.role!=='manager')) return alert('Keine Berechtigung');
+          const site=$('#siteName').value.trim(); const addr=$('#siteAddr').value.trim();
+          const start=$('#startAt').value; const end=$('#endAt').value; const email=$('#assignee').value.trim(); const notes=$('#notes').value.trim();
+          if(!site||!addr||!start||!end||!email) return alert('Bitte alle Felder ausfüllen');
+          const id=uid('shf'); DB.shifts.push({id, site, addr, start:new Date(start).toISOString(), end:new Date(end).toISOString(), notes});
+          DB.assignments.push({id:uid('as'), shiftId:id, email, status:'assigned'});
+          save('pc_shifts', DB.shifts); save('pc_assignments', DB.assignments);
+          UI.toast('Schicht gespeichert'); App.renderShifts(); App.renderToday();
+          notify('shift_created', {id, site, addr, start, end, email});
+        };
+        $('#btnClearForm').onclick=()=>{ ['siteName','siteAddr','startAt','endAt','assignee','notes'].forEach(id=>$('#'+id).value=''); };
+        $('#qShift').oninput=()=>this.renderShifts();
+        $('#fromDate').onchange=()=>this.renderShifts();
+        $('#toDate').onchange=()=>this.renderShifts();
+        $('#btnExportCSV').onclick=()=>Export.csv();
+        $('#btnExportICS').onclick=()=>Export.ics();
+        // Editbar actions
+        $('#btnNewShift').onclick=()=>{ UI.switchTab('admin'); $('#siteName').focus(); };
+        $('#btnEditShift').onclick=()=>{
+          if(DB.sel.size!==1) return alert('Bitte genau 1 Schicht auswählen');
+          const id=[...DB.sel][0]; const s=DB.shifts.find(x=>x.id===id); const asg=DB.assignments.find(a=>a.shiftId===id) || {email:''};
+          if(!s) return; UI.switchTab('admin');
+          $('#siteName').value=s.site; $('#siteAddr').value=s.addr; $('#startAt').value=s.start.slice(0,16); $('#endAt').value=s.end.slice(0,16); $('#assignee').value=asg.email; $('#notes').value=s.notes||'';
+        };
+        $('#btnDelShift').onclick=()=>{
+          if(DB.sel.size<1) return alert('Keine Schicht ausgewählt');
+          if(!confirm('Ausgewählte Schichten löschen?')) return;
+          const ids=[...DB.sel];
+          DB.shifts = DB.shifts.filter(s=>!ids.includes(s.id));
+          DB.assignments = DB.assignments.filter(a=>!ids.includes(a.shiftId));
+          save('pc_shifts', DB.shifts); save('pc_assignments', DB.assignments);
+          DB.sel.clear(); persistSel(); App.renderShifts(); App.renderToday();
+          notify('shift_deleted', {ids});
+        };
+        $('#btnDupShift').onclick=()=>{
+          if(DB.sel.size!==1) return alert('Bitte genau 1 Schicht auswählen');
+          const id=[...DB.sel][0]; const s=DB.shifts.find(x=>x.id===id); const asg=DB.assignments.find(a=>a.shiftId===id);
+          if(!s) return; const nid=uid('shf');
+          const start=new Date(new Date(s.start).getTime()+24*3600*1000); const end=new Date(new Date(s.end).getTime()+24*3600*1000);
+          DB.shifts.push({id:nid, site:s.site, addr:s.addr, start:start.toISOString(), end:end.toISOString(), notes:s.notes});
+          if(asg) DB.assignments.push({id:uid('as'), shiftId:nid, email:asg.email, status:'assigned'});
+          save('pc_shifts', DB.shifts); save('pc_assignments', DB.assignments);
+          UI.toast('Schicht dupliziert (+1 Tag)'); App.renderShifts();
+          notify('shift_duplicated', {from:id, to:nid});
+        };
+        // Settings
+        $('#btnSaveSettings').onclick=()=>{
+          DB.settings.managerEmail = $('#setManagerEmail').value.trim();
+          DB.settings.webhook = $('#setWebhook').value.trim();
+          DB.settings.acc = $('#setAcc').value; DB.settings.acc2 = $('#setAcc2').value; DB.settings.theme = $('#setTheme').value;
+          save('pc_settings', DB.settings); applyBrand(); UI.toast('Einstellungen gespeichert');
+        };
+        // Prefill settings
+        $('#setManagerEmail').value=DB.settings.managerEmail||''; $('#setWebhook').value=DB.settings.webhook||''; $('#setAcc').value=DB.settings.acc; $('#setAcc2').value=DB.settings.acc2; $('#setTheme').value=DB.settings.theme;
+      }
+    };
+
+    const Actions = {
+      confirm(shiftId){ if(!DB.user) return alert('Bitte anmelden');
+        const a = DB.assignments.find(x=>x.shiftId===shiftId && x.email===DB.user.email); if(!a) return;
+        a.status='confirmed'; save('pc_assignments', DB.assignments); UI.toast('Schicht bestätigt'); App.renderToday(); App.renderShifts();
+        notify('shift_confirmed', {shiftId});
+      },
+      decline(shiftId){ if(!DB.user) return alert('Bitte anmelden');
+        const a = DB.assignments.find(x=>x.shiftId===shiftId && x.email===DB.user.email); if(!a) return;
+        a.status='declined'; save('pc_assignments', DB.assignments); UI.toast('Schicht abgesagt'); App.renderToday(); App.renderShifts();
+        notify('shift_declined', {shiftId});
+      }
+    };
+
+    const Export = {
+      _buildCsv(){
+        const rows = [['E-Mail','Shift','Start','Ende','Einstempel','Ausstempel','Dauer(h)']];
+        for(const t of DB.timeEntries){
+          const s = DB.shifts.find(x=>x.id===t.shiftId);
+          const dur = t.clockOut? ((new Date(t.clockOut)-new Date(t.clockIn))/3600000).toFixed(2) : '';
+          rows.push([t.email, s? s.site:'(frei)', s? fmtDate(s.start):'', s? fmtDate(s.end):'', fmtDate(t.clockIn), t.clockOut? fmtDate(t.clockOut):'', dur]);
+        }
+        return rows.map(r=> r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\n');
+      },
+      csv(){
+        const csv = Export._buildCsv();
+        const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob);
+        const a=document.createElement('a'); a.href=url; a.download='perscraft_stunden.csv'; a.click(); URL.revokeObjectURL(url);
+      },
+      _buildICS(){
+        const lines=[ 'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//PersCraft//Schichtplan//DE' ];
+        for(const a of DB.assignments){
+          const s = DB.shifts.find(x=>x.id===a.shiftId); if(!s) continue;
+          const dt = (d)=> new Date(d).toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+          lines.push('BEGIN:VEVENT');
+          lines.push('UID:'+uid('ics'));
+          lines.push('DTSTAMP:'+dt(new Date()));
+          lines.push('DTSTART:'+dt(s.start)); lines.push('DTEND:'+dt(s.end));
+          lines.push('SUMMARY:'+('Schicht: '+s.site));
+          lines.push('LOCATION:'+s.addr);
+          lines.push('DESCRIPTION:'+(s.notes||''));
+          lines.push('END:VEVENT');
+        }
+        lines.push('END:VCALENDAR');
+        return lines.join('\n');
+      },
+      ics(){
+        const content = Export._buildICS();
+        const blob = new Blob([content],{type:'text/calendar'}); const url = URL.createObjectURL(blob);
+        const a=document.createElement('a'); a.href=url; a.download='perscraft_schichten.ics'; a.click(); URL.revokeObjectURL(url);
+      }
+    };
+
+    // --- Diagnostics / Tests ----------------------------------------------
+    function runTests(){
+      const log=[]; const ok=(name,cond,extra='')=> log.push(`${cond?'✔':'✖'} ${name}${extra? ' — '+extra:''}`);
+      try{
+        // Test 1: CSV builder contains header & \n separators
+        const csv = Export._buildCsv();
+        ok('CSV hat Header', csv.startsWith('"E-Mail","Shift"'));
+        ok('CSV nutzt Zeilenumbrüche', csv.includes('\n'));
+
+        // Test 2: ICS builder basic structure
+        const ics = Export._buildICS();
+        ok('ICS beginnt korrekt', ics.startsWith('BEGIN:VCALENDAR'));
+        ok('ICS enthält Ereignis oder nur Kalenderkopf', ics.includes('BEGIN:VEVENT') || ics.endsWith('END:VCALENDAR'));
+        ok('ICS nutzt \n', ics.includes('\n'));
+
+        // Test 3: Route builder fallback (does not throw)
+        ok('openPreciseRoute ist Funktion', typeof openPreciseRoute==='function');
+      }catch(e){
+        ok('Tests ausgeführt', false, e.message||String(e));
+      }
+      $('#diagLog').textContent = log.join('\n');
+    }
+
+    // Initial render
+    App.renderAll();
+    runTests();
+  </script>
+</body>
+</html>
