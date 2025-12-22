@@ -1,122 +1,130 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Datenschutzerklärung | PersCraft</title>
-  <style>
-    :root {
-      --bg: #fbfbfd; --fg: #1d1d1f; --muted:#6e6e73; --accent:#0071e3; --border:#ddd;
-    }
-    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-           color:var(--fg); background:var(--bg); line-height:1.6; }
-    header { position:sticky; top:0; background:rgba(0,0,0,.85); color:#f5f5f7; backdrop-filter:saturate(180%) blur(20px);}
-    .wrap { max-width:980px; margin:0 auto; padding:0 20px; }
-    .nav { display:flex; align-items:center; height:48px; justify-content:space-between; }
-    .nav a { color:#f5f5f7; text-decoration:none; opacity:.85; font-size:14px; margin-left:16px; }
-    .nav a:hover { opacity:1; }
-    main { padding:48px 0 60px; }
-    h1 { font-size:32px; margin:24px 0 8px; }
-    h2 { font-size:20px; margin-top:24px; }
-    p, li { color:#333; }
-    ul { padding-left:18px; }
-    footer { border-top:1px solid var(--border); color:var(--muted); text-align:center; padding:20px 10px; }
-    footer a { color:var(--muted); text-decoration:none; margin:0 8px; transition:color .3s; }
-    footer a:hover { color:var(--accent); }
-    /* Cookie-Banner */
-    #cookie-banner{position:fixed;left:0;right:0;bottom:0;background:#222;color:#fff;padding:15px;text-align:center;font-size:14px;display:none;z-index:1000}
-    #cookie-banner a{color:#4EA8DE;text-decoration:underline}
-    #cookie-banner button{margin-left:12px;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;font-size:14px}
-    #cookie-accept{background:#4CAF50;color:#fff} #cookie-decline{background:#d9534f;color:#fff}
-  </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PersCraft – Datenschutz</title>
+  <meta name="description" content="PersCraft – Personalleasing, Gebäudemanagement und Entsorgung in München." />
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
-  <header>
-    <div class="wrap nav">
-      <div><a href="index.html" style="font-weight:600;">PersCraft</a></div>
-      <nav>
-  <a href="index.html">Startseite</a>
-  <a href="impressum.html">Impressum</a>
-  <a href="datenschutz.html">Datenschutz</a>
-  <a href="kontakt.html">Kontakt</a> <!-- neu -->
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="index.html" aria-label="PersCraft Startseite">
+        <img src="assets/img/Mein_ChatGPT-Bild.png" alt="PersCraft Logo" />
+      </a>
+      <nav class="menu" aria-label="Hauptnavigation">
+        <a href="index.html">Start</a>
+<a href="start2.html">Dienstleistungen</a>
+<a href="personalleasing.html">Personalleasing</a>
+<a href="gebaeudemanagement.html">Gebäudemanagement</a>
+<a href="entsorgung.html">Entsorgung</a>
+<a href="unternehmen.html">Für Unternehmen</a>
+<a href="karriere.html">Karriere</a>
+<a href="kontakt.html" aria-current="page">Kontakt</a>
+        <button class="btn btn-ghost" type="button" data-theme-toggle>Dark Mode</button>
+        <a class="btn btn-primary" href="kontakt.html">Jetzt Kontakt aufnehmen</a>
       </nav>
     </div>
   </header>
 
-  <main class="wrap">
-    <h1>Datenschutzerklärung</h1>
-    <p><em>Stand: September 2025</em></p>
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="kicker">PersCraft</div>
+          <h1 class="h1">Datenschutzerklärung</h1>
+          <p class="lead">Informationen zur Verarbeitung personenbezogener Daten.</p>
+          <div class="badges">
+            <span class="badge">München & Umgebung</span>
+            <span class="badge">Dokumentiert & zuverlässig</span>
+            <span class="badge">Individuelle Lösungen</span>
+          </div>
+          <div style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;">
+            <a class="btn btn-primary" href="kontakt.html">Jetzt Kontakt aufnehmen</a>
+            <a class="btn" href="start2.html">Leistungen ansehen</a>
+          </div>
+        </div>
+        <div class="hero-card">
+          <img src="assets/img/IMG_6480.JPG" alt="" />
+        </div>
+      </div>
+    </section>
 
-    <h2>1. Verantwortlicher</h2>
-    <p>PersCraft – Inh. Anas Awni<br>
-       Silvanastraße 7, 81927 München, Deutschland<br>
-       E-Mail: <a href="mailto:perscraftde@gmail.com">perscraftde@gmail.com</a>
-    </p>
+    
+<section class="section">
+  <div class="container">
+    <h2>Datenschutzerklärung</h2>
+    <p class="small">Stand: September 2025</p>
+    <div class="card"><div class="pad">
+      <h3>1. Verantwortlicher</h3>
+      <p>PersCraft – Inh. Anas Awni<br/>Silvanastraße 7, 81927 München, Deutschland<br/>E-Mail: perscraftde@gmail.com</p>
 
-    <h2>2. Server-Logfiles / technische Daten</h2>
-    <p>Beim Aufruf dieser Website übermittelt Ihr Browser automatisch Daten an unseren Server (z. B. IP-Adresse, Datum und Uhrzeit des Zugriffs, aufgerufene Seiten, Referrer-URL, Browsertyp/ -version, Betriebssystem). Die Verarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der technischen Bereitstellung und Sicherheit des Webangebots). Eine Zuordnung zu bestimmten Personen erfolgt nicht.</p>
+      <h3>2. Server-Logfiles / technische Daten</h3>
+      <p>Beim Aufruf dieser Website übermittelt Ihr Browser automatisch Daten an unseren Server (z. B. IP-Adresse, Datum und Uhrzeit des Zugriffs, aufgerufene Seiten, Referrer-URL, Browsertyp/ -version, Betriebssystem). Die Verarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO.</p>
 
-    <h2>3. Kontaktaufnahme</h2>
-    <p>Wenn Sie uns per E-Mail kontaktieren, verarbeiten wir Ihre Angaben zur Bearbeitung der Anfrage (Art. 6 Abs. 1 lit. b bzw. lit. f DSGVO). Eine Weitergabe an Dritte erfolgt nicht ohne Ihre Einwilligung.</p>
+      <h3>3. Kontaktaufnahme</h3>
+      <p>Wenn Sie uns per E-Mail oder Formular kontaktieren, verarbeiten wir Ihre Angaben zur Bearbeitung der Anfrage (Art. 6 Abs. 1 lit. b bzw. lit. f DSGVO). Eine Weitergabe an Dritte erfolgt nicht ohne Ihre Einwilligung.</p>
 
-    <h2>4. Cookies</h2>
-    <p>Wir verwenden Cookies, um grundlegende Funktionen bereitzustellen (z. B. Merken Ihrer Cookie-Auswahl). Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Sie können Cookies in den Einstellungen Ihres Browsers löschen oder blockieren.</p>
+      <h3>4. Cookies</h3>
+      <p>Wir verwenden Cookies, um grundlegende Funktionen bereitzustellen (z. B. Merken Ihrer Cookie-Auswahl). Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.</p>
 
-    <h2>5. Google Maps</h2>
-    <p>Auf einzelnen Seiten kann Google Maps (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland) eingebunden sein, um Karten anzuzeigen. Dabei können personenbezogene Daten (z. B. IP-Adresse) an Google übertragen werden. Weitere Informationen: <a href="https://policies.google.com/privacy?hl=de" target="_blank" rel="noopener">Datenschutzerklärung von Google</a>. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (Interesse an ansprechender Darstellung/leichter Auffindbarkeit).</p>
+      <h3>5. Google Maps</h3>
+      <p>Auf einzelnen Seiten kann Google Maps eingebunden sein, um Karten anzuzeigen. Dabei können personenbezogene Daten (z. B. IP-Adresse) an Google übertragen werden.</p>
 
-    <h2>6. Google Fonts</h2>
-    <p>Zur einheitlichen Darstellung von Schriftarten können Web Fonts (Google Fonts) eingesetzt werden. Beim Aufruf der Seiten lädt Ihr Browser die benötigten Fonts in den Cache; dabei wird Ihre IP-Adresse an Server von Google übertragen. Mehr Infos: <a href="https://developers.google.com/fonts/faq" target="_blank" rel="noopener">Google Fonts FAQ</a> und <a href="https://policies.google.com/privacy?hl=de" target="_blank" rel="noopener">Datenschutzerklärung von Google</a>. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO.</p>
+      <h3>6. Google Fonts</h3>
+      <p>Zur einheitlichen Darstellung von Schriftarten können Web Fonts (Google Fonts) eingesetzt werden. Beim Aufruf der Seiten lädt Ihr Browser die benötigten Fonts in den Cache; dabei wird Ihre IP-Adresse an Server von Google übertragen.</p>
 
-    <h2>7. Hosting</h2>
-    <p>Unser Webauftritt wird bei einem externen Dienstleister (Hosting-Provider) betrieben. Personenbezogene Daten, die auf dieser Website erfasst werden, werden auf dessen Servern verarbeitet (insb. IP-Adressen, Logfiles). Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (sichere und effiziente Bereitstellung des Online-Angebots).</p>
+      <h3>7. Hosting</h3>
+      <p>Unser Webauftritt wird bei einem externen Dienstleister betrieben. Personenbezogene Daten, die auf dieser Website erfasst werden, werden auf dessen Servern verarbeitet.</p>
 
-    <h2>8. Rechtsgrundlagen der Verarbeitung</h2>
-    <ul>
-      <li>Art. 6 Abs. 1 lit. b DSGVO (Vertrag/Anbahnung)</li>
-      <li>Art. 6 Abs. 1 lit. f DSGVO (berechtigte Interessen, insb. Sicherheit & Funktionalität)</li>
-      <li>Art. 6 Abs. 1 lit. a DSGVO (Einwilligung), sofern Sie diese erteilen</li>
-    </ul>
+      <h3>8. Rechtsgrundlagen der Verarbeitung</h3>
+      <ul class="list">
+        <li>Art. 6 Abs. 1 lit. b DSGVO (Vertrag/Anbahnung)</li>
+        <li>Art. 6 Abs. 1 lit. f DSGVO (berechtigte Interessen, insb. Sicherheit & Funktionalität)</li>
+        <li>Art. 6 Abs. 1 lit. a DSGVO (Einwilligung), sofern Sie diese erteilen</li>
+      </ul>
 
-    <h2>9. Ihre Rechte</h2>
-    <p>Sie haben die Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO). Zudem besteht ein Beschwerderecht bei einer zuständigen Aufsichtsbehörde (Art. 77 DSGVO).</p>
+      <h3>9. Ihre Rechte</h3>
+      <p>Sie haben die Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO). Zudem besteht ein Beschwerderecht bei einer zuständigen Aufsichtsbehörde (Art. 77 DSGVO).</p>
 
-    <h2>10. Aktualität dieser Erklärung</h2>
-    <p>Wir behalten uns vor, diese Datenschutzerklärung zu aktualisieren. Es gilt die jeweils auf dieser Seite veröffentlichte Fassung.</p>
+      <h3>10. Aktualität dieser Erklärung</h3>
+      <p>Wir behalten uns vor, diese Datenschutzerklärung zu aktualisieren. Es gilt die jeweils auf dieser Seite veröffentlichte Fassung.</p>
+    </div></div>
+  </div>
+</section>
+
   </main>
 
-  <footer>
-    <div class="wrap">
-      <p>© 2025 PersCraft – Inh. Anas Awni. Alle Rechte vorbehalten.</p>
-  <a href="impressum.html">Impressum</a> | 
-  <a href="datenschutz.html">Datenschutzerklärung</a> | 
-  <a href="kontakt.html">Kontakt</a> <!-- neu -->
-</p>
-      <p><a href="impressum.html">Impressum</a> | <a href="datenschutz.html">Datenschutzerklärung</a></p>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div>© 2025 PersCraft – Inh. Anas Awni. Alle Rechte vorbehalten.</div>
+        <div class="footer-links">
+          <a href="impressum.html">Impressum</a>
+          <a href="datenschutz.html">Datenschutz</a>
+          <a href="agb.html">AGB</a>
+          <a href="kontakt.html">Kontakt</a>
+        </div>
+      </div>
+      <div style="margin-top:10px">E-Mail: <a href="mailto:perscraftde@gmail.com">perscraftde@gmail.com</a></div>
     </div>
   </footer>
 
-  <!-- Cookie-Banner -->
-  <div id="cookie-banner">
-    Diese Website verwendet Cookies, um Ihnen die bestmögliche Nutzung zu ermöglichen.
-    <a href="datenschutz.html">Mehr erfahren</a>
-    <button id="cookie-accept">Akzeptieren</button>
-    <button id="cookie-decline">Ablehnen</button>
+  <div class="cookie" data-cookie>
+    <div class="cookie-inner">
+      <div>
+        <strong>Cookies</strong><br/>
+        <span class="small">Wir verwenden Cookies, um grundlegende Funktionen bereitzustellen (z. B. Merken Ihrer Auswahl).</span>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="btn" href="datenschutz.html">Mehr erfahren</a>
+        <button class="btn btn-primary" data-cookie-accept>Akzeptieren</button>
+        <button class="btn" data-cookie-decline>Ablehnen</button>
+      </div>
+    </div>
   </div>
-  <script>
-    document.addEventListener("DOMContentLoaded",function(){
-      if(!localStorage.getItem("cookieConsent")){
-        document.getElementById("cookie-banner").style.display="block";
-      }
-      document.getElementById("cookie-accept").onclick=function(){
-        localStorage.setItem("cookieConsent","accepted");
-        document.getElementById("cookie-banner").style.display="none";
-      };
-      document.getElementById("cookie-decline").onclick=function(){
-        localStorage.setItem("cookieConsent","declined");
-        document.getElementById("cookie-banner").style.display="none";
-      };
-    });
-  </script>
+
+  <script src="assets/js/main.js"></script>
 </body>
 </html>
