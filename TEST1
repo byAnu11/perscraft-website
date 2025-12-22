@@ -1,0 +1,60 @@
+import os, shutil, textwrap, zipfile, re
+from pathlib import Path
+
+base = Path("/mnt/data/perscraft_site")
+if base.exists():
+    shutil.rmtree(base)
+(base / "assets" / "css").mkdir(parents=True, exist_ok=True)
+(base / "assets" / "js").mkdir(parents=True, exist_ok=True)
+(base / "assets" / "img").mkdir(parents=True, exist_ok=True)
+
+# Copy provided images into assets/img (convert filenames to safe)
+src_files = [
+    "/mnt/data/Mein ChatGPT-Bild.png",
+    "/mnt/data/ChatGPT Image 22. Dez. 2025, 19_55_41.png",
+    "/mnt/data/IMG_6480.JPG",
+    "/mnt/data/IMG_6569.JPG",
+    "/mnt/data/IMG_7054.JPG",
+    "/mnt/data/Leasing-Konzepte im Fokus.png",
+    "/mnt/data/chef-serving-variety-delicious-dishes-600nw-2630302997.jpg.webp",
+    "/mnt/data/ChatGPT Image 18. Okt. 2025, 21_27_56_SnapseedCopy.jpg",
+    "/mnt/data/bf67a200-690e-11ea-8d3b-a3232373c7af-empfangsmitarbeiter.jpg.avif",
+]
+existing = [p for p in src_files if Path(p).exists()]
+
+def safe_name(p):
+    name = Path(p).name
+    name = name.replace(" ", "_").replace("ä","ae").replace("ö","oe").replace("ü","ue").replace("Ä","Ae").replace("Ö","Oe").replace("Ü","Ue").replace("ß","ss")
+    name = re.sub(r"[^A-Za-z0-9._-]", "", name)
+    return name
+
+# Try image conversion for avif/webp to png/jpg using pillow if possible
+from PIL import Image
+
+def convert_if_needed(src_path, dst_dir):
+    src = Path(src_path)
+    ext = src.suffix.lower()
+    dst_name = safe_name(src)
+    dst_path = dst_dir / dst_name
+    if ext in [".avif", ".webp"]:
+        # convert to png
+        try:
+            im = Image.open(src_path)
+            dst_path = dst_dir / (src.stem + ".png")
+            im.save(dst_path, format="PNG")
+            return dst_path.name
+        except Exception:
+            # fallback: just copy
+            shutil.copy2(src_path, dst_path)
+            return dst_path.name
+    else:
+        shutil.copy2(src_path, dst_path)
+        return dst_path.name
+
+img_map = {}
+for f in existing:
+    outname = convert_if_needed(f, base/"assets"/"img")
+    img_map[Path(f).name] = outname
+
+img_map
+
