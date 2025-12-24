@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PersCraft – Kontakt</title>
+  <title>PersCraft – Für Unternehmen</title>
   <meta name="description" content="PersCraft – Personalleasing & Gebäudemanagement in München" />
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
@@ -14,11 +14,11 @@
         <img src="assets/img/perscraft_logo.png" class="contain" alt="PersCraft Logo" />
       </a>
       <nav class="menu" aria-label="Hauptnavigation">
-        <a href="index.html" aria-current="page">Start</a>
+        <a href="index.html">Start</a>
         <a href="start2.html">Dienstleistungen</a>
         <a href="personalleasing.html">Personalleasing</a>
         <a href="gebaeudemanagement.html">Gebäudemanagement</a>
-        <a href="unternehmen.html">Für Unternehmen</a>
+        <a href="unternehmen.html" aria-current="page">Für Unternehmen</a>
         <a href="karriere.html">Karriere</a>
         <a class="btn" href="kontakt.html">Kontakt aufnehmen</a>
       </nav>
@@ -31,15 +31,15 @@
   <div class="container">
     <div class="hero-grid" style="padding:50px 0">
       <div>
-        <h1>Kontakt aufnehmen</h1>
-        <p>Schreiben Sie uns kurz Ihr Anliegen – wir melden uns zeitnah zurück.</p>
+        <h1>Für Unternehmen</h1>
+        <p>Planbare Dienstleistungen für Gewerbe: Personal, Reinigung und Entsorgung – mit klarer Abwicklung und festen Ansprechpartnern.</p>
         <div class="hero-actions">
-          <a class="btn secondary" href="index.html">Zur Startseite</a>
-          <a class="btn secondary" href="start2.html">Dienstleistungen</a>
+          <a class="btn" href="kontakt.html">Projekt anfragen</a>
+          <a class="btn secondary" href="personalleasing.html">Personalleasing</a>
         </div>
       </div>
       <div class="hero-media contain">
-        <img src="assets/img/perscraft_logo.png" class="contain" alt="PersCraft Logo" style="object-fit:contain;background:#fff" />
+        <img src="assets/img/perscraft_logo.png" class="contain" alt="PersCraft" />
       </div>
     </div>
   </div>
@@ -47,42 +47,48 @@
 
 <section class="section">
   <div class="container">
-    <div class="form">
-      <p style="color:var(--text-light);margin-bottom:10px">
-        Direktkontakt: <a href="mailto:perscraftde@gmail.com">perscraftde@gmail.com</a>
-      </p>
-      <form action="mailto:perscraftde@gmail.com" method="post" enctype="text/plain">
-        <div class="form-row">
-          <div class="field">
-            <label for="firma">Firma / Name</label>
-            <input id="firma" name="Firma/Name" required />
-          </div>
-          <div class="field">
-            <label for="email">E-Mail</label>
-            <input id="email" name="E-Mail" type="email" required />
+    <div class="section-header">
+      <h2>Typische Einsatzszenarien</h2>
+      <p>Ob Einzelauftrag oder Rahmenvertrag – wir unterstützen Sie strukturiert und wirtschaftlich.</p>
+    </div>
+
+    <div class="grid-3">
+      <div class="card"><div class="card-body"><div class="card-title">Büro &amp; Praxis</div><div class="card-text">Unterhaltsreinigung, Glasreinigung, Sonderreinigungen.</div></div></div>
+      <div class="card"><div class="card-body"><div class="card-title">Bau &amp; Umbau</div><div class="card-text">Bauzwischen-/Bauendreinigung und Abfallmanagement nach Bedarf.</div></div></div>
+      <div class="card"><div class="card-body"><div class="card-title">Service &amp; Veranstaltungen</div><div class="card-text">Kurzfristige Personalbedarfe, Servicekräfte, Empfangspersonal.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container">
+    <div class="section-header">
+      <h2>So erhalten Sie ein Angebot</h2>
+      <p>Je besser die Eckdaten, desto schneller das passende Angebot.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-body">
+          <div class="card-title">Benötigte Informationen</div>
+          <ul class="list" style="margin-top:12px">
+            <li>Leistungsbereich (Personal / Reinigung / Entsorgung)</li>
+            <li>Ort, Zeitraum, gewünschter Turnus</li>
+            <li>Fläche/Objekttyp oder Personalprofil</li>
+            <li>Besonderheiten (Zugang, Material, Sicherheitsvorgaben)</li>
+          </ul>
+          <div style="margin-top:12px"><a class="btn" href="kontakt.html">Jetzt Anfrage senden</a></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="card-title">Unser Versprechen</div>
+          <div class="card-text">Saubere Kalkulation, klare Leistungsbeschreibung und verlässliche Umsetzung – ohne unnötige Komplexität.</div>
+          <div style="margin-top:14px;color:var(--text-light);font-size:15px">
+            Auf Wunsch: Vor-Ort-Termin zur präzisen Abstimmung.
           </div>
         </div>
-        <div class="form-row">
-          <div class="field">
-            <label for="telefon">Telefon</label>
-            <input id="telefon" name="Telefon" />
-          </div>
-          <div class="field">
-            <label for="leistung">Leistungsbereich</label>
-            <select id="leistung" name="Leistungsbereich">
-              <option>Personalleasing</option>
-              <option>Gebäudemanagement</option>
-              <option>Entsorgung</option>
-              <option>Sonstiges</option>
-            </select>
-          </div>
-        </div>
-        <div class="field">
-          <label for="details">Details</label>
-          <textarea id="details" name="Details" placeholder="Ort, Zeitraum, Fläche/Profil, Turnus, Besonderheiten"></textarea>
-        </div>
-        <button class="btn" type="submit">E-Mail vorbereiten</button>
-      </form>
+      </div>
     </div>
   </div>
 </section>
