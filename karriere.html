@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PersCraft – Kontakt</title>
+  <title>PersCraft – Karriere</title>
   <meta name="description" content="PersCraft – Personalleasing & Gebäudemanagement in München" />
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
@@ -14,12 +14,12 @@
         <img src="assets/img/perscraft_logo.png" class="contain" alt="PersCraft Logo" />
       </a>
       <nav class="menu" aria-label="Hauptnavigation">
-        <a href="index.html" aria-current="page">Start</a>
+        <a href="index.html">Start</a>
         <a href="start2.html">Dienstleistungen</a>
         <a href="personalleasing.html">Personalleasing</a>
         <a href="gebaeudemanagement.html">Gebäudemanagement</a>
         <a href="unternehmen.html">Für Unternehmen</a>
-        <a href="karriere.html">Karriere</a>
+        <a href="karriere.html" aria-current="page">Karriere</a>
         <a class="btn" href="kontakt.html">Kontakt aufnehmen</a>
       </nav>
     </div>
@@ -31,15 +31,15 @@
   <div class="container">
     <div class="hero-grid" style="padding:50px 0">
       <div>
-        <h1>Kontakt aufnehmen</h1>
-        <p>Schreiben Sie uns kurz Ihr Anliegen – wir melden uns zeitnah zurück.</p>
+        <h1>Karriere</h1>
+        <p>Sie möchten Teil von PersCraft werden? Wir suchen zuverlässige Menschen für Einsätze in München und Umgebung.</p>
         <div class="hero-actions">
-          <a class="btn secondary" href="index.html">Zur Startseite</a>
-          <a class="btn secondary" href="start2.html">Dienstleistungen</a>
+          <a class="btn" href="kontakt.html">Interesse melden</a>
+          <a class="btn secondary" href="personalleasing.html">Einsatzbereiche</a>
         </div>
       </div>
       <div class="hero-media contain">
-        <img src="assets/img/perscraft_logo.png" class="contain" alt="PersCraft Logo" style="object-fit:contain;background:#fff" />
+        <img src="assets/img/perscraft_logo.png" class="contain" alt="PersCraft" />
       </div>
     </div>
   </div>
@@ -47,39 +47,54 @@
 
 <section class="section">
   <div class="container">
+    <div class="section-header">
+      <h2>Was wir bieten</h2>
+      <p>Verlässliche Einsätze, klare Absprachen und ein professionelles Umfeld.</p>
+    </div>
+
+    <div class="grid-3">
+      <div class="card"><div class="card-body"><div class="card-title">Planbarkeit</div><div class="card-text">Transparente Einsatzplanung und klare Anforderungen.</div></div></div>
+      <div class="card"><div class="card-body"><div class="card-title">Fairer Umgang</div><div class="card-text">Respektvolle Zusammenarbeit und feste Ansprechpartner.</div></div></div>
+      <div class="card"><div class="card-body"><div class="card-title">Vielfalt</div><div class="card-text">Unterschiedliche Einsätze: Service, Office, Reinigung, Entsorgung.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container">
+    <div class="section-header">
+      <h2>Interesse? So geht’s</h2>
+      <p>Senden Sie uns kurz Ihre Eckdaten – wir melden uns zurück.</p>
+    </div>
+
     <div class="form">
       <p style="color:var(--text-light);margin-bottom:10px">
-        Direktkontakt: <a href="mailto:perscraftde@gmail.com">perscraftde@gmail.com</a>
+        Alternativ können Sie uns direkt per E-Mail schreiben: <a href="mailto:perscraftde@gmail.com">perscraftde@gmail.com</a>
       </p>
       <form action="mailto:perscraftde@gmail.com" method="post" enctype="text/plain">
         <div class="form-row">
           <div class="field">
-            <label for="firma">Firma / Name</label>
-            <input id="firma" name="Firma/Name" required />
+            <label for="name">Name</label>
+            <input id="name" name="Name" required />
           </div>
           <div class="field">
-            <label for="email">E-Mail</label>
-            <input id="email" name="E-Mail" type="email" required />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="field">
-            <label for="telefon">Telefon</label>
-            <input id="telefon" name="Telefon" />
-          </div>
-          <div class="field">
-            <label for="leistung">Leistungsbereich</label>
-            <select id="leistung" name="Leistungsbereich">
-              <option>Personalleasing</option>
-              <option>Gebäudemanagement</option>
-              <option>Entsorgung</option>
-              <option>Sonstiges</option>
-            </select>
+            <label for="phone">Telefon</label>
+            <input id="phone" name="Telefon" />
           </div>
         </div>
         <div class="field">
-          <label for="details">Details</label>
-          <textarea id="details" name="Details" placeholder="Ort, Zeitraum, Fläche/Profil, Turnus, Besonderheiten"></textarea>
+          <label for="area">Gewünschter Bereich</label>
+          <select id="area" name="Bereich">
+            <option>Service / Catering</option>
+            <option>Empfang / Office</option>
+            <option>Reinigung</option>
+            <option>Entsorgung</option>
+            <option>Sonstiges</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="msg">Nachricht</label>
+          <textarea id="msg" name="Nachricht" placeholder="Kurzprofil, Verfügbarkeit, Einsatzort (falls relevant)"></textarea>
         </div>
         <button class="btn" type="submit">E-Mail vorbereiten</button>
       </form>
